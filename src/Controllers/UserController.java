@@ -1,5 +1,6 @@
 package Controllers;
 
+import Models.User;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -8,6 +9,7 @@ import javafx.scene.control.TextField;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -28,7 +30,7 @@ public class UserController {
     String user_id;
     String password;
     ResourceBundle text;
-
+    ResultSet rs;
     public void initialize() {
         Controller.connectToAndQueryDatabase();
         Locale currentLocale = Locale.getDefault();
@@ -40,23 +42,31 @@ public class UserController {
     }
 
     public void findUser() {
-        System.out.println("running findUser");
         user_id = id_field.getText();
         password = password_field.getText();
-        System.out.println(user_id + password);
         String query = "SELECT * FROM users WHERE User_id = '" + user_id + "' AND Password = '" + password + "';";
         try (Statement stmt = Controller.con.createStatement()) {
-            ResultSet rs = stmt.executeQuery(query);
+            rs = stmt.executeQuery(query);
             if (rs.next()) {
-                while (rs.next()) {
-                    String user_name = rs.getString("User_Name");
-                    System.out.println("user name: " + user_name);
-                }
+                System.out.println("in while" + rs.getString("User_Id"));
+                User user = new User(rs.getString("User_Id"),
+                        rs.getString("User_Name"),
+                        rs.getDate("Create_Date").toLocalDate(),
+                        rs.getString("Created_By"),
+                        rs.getDate("Last_Update").toLocalDate(),
+                        rs.getString("Last_Updated_By"),
+                        rs.getString("Password"));
+                System.out.println(user.getUserName());
             } else {
                 Controller.throwAlert(text.getString("login_error_1"), text.getString("login_error_2"));
             }
-            } catch (SQLException throwables) {
+
+        } catch (SQLException | ParseException throwables) {
             throwables.printStackTrace();
+        } finally {
+            try { rs.close(); } catch (Exception e) { /* Ignored */ }
+            try { Controller.con.close(); } catch (Exception e) { /* Ignored */ }
         }
+
     }
 }
