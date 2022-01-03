@@ -10,6 +10,7 @@ import javafx.scene.control.TableView;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -17,27 +18,27 @@ public class CustomerController {
     @FXML
     private TableView<Customer> customer_table;
     @FXML
-    private TableColumn id;
+    private TableColumn<Customer, Integer> id;
     @FXML
-    private TableColumn address;
+    private TableColumn<Customer, String> address;
     @FXML
-    private TableColumn name;
+    private TableColumn<Customer, String> name;
     @FXML
-    private TableColumn country;
+    private TableColumn<Customer, String> country;
     @FXML
-    private TableColumn division;
+    private TableColumn<Customer, String> division;
     @FXML
-    private TableColumn phone;
+    private TableColumn<Customer, String> phone;
     @FXML
-    private TableColumn postal_code;
+    private TableColumn<Customer, String> postal_code;
     @FXML
-    private TableColumn create_date;
+    private TableColumn<Customer, LocalDate> create_date;
     @FXML
-    private TableColumn created_by;
+    private TableColumn<Customer, String> created_by;
     @FXML
-    private TableColumn last_update;
+    private TableColumn<Customer, LocalDate> last_update;
     @FXML
-    private TableColumn updated_by;
+    private TableColumn<Customer, String> updated_by;
 
     public static ObservableList<Customer> allCustomers = FXCollections.observableArrayList();
     ResourceBundle text;
