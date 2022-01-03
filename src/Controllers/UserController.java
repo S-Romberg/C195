@@ -2,10 +2,15 @@ package Controllers;
 
 import Models.User;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -41,22 +46,21 @@ public class UserController {
         submit_button.setText(text.getString("submit"));
     }
 
-    public void findUser() {
+    public void findUser() throws IOException {
         user_id = id_field.getText();
         password = password_field.getText();
         String query = "SELECT * FROM users WHERE User_id = '" + user_id + "' AND Password = '" + password + "';";
         try (Statement stmt = Controller.con.createStatement()) {
             rs = stmt.executeQuery(query);
             if (rs.next()) {
-                System.out.println("in while" + rs.getString("User_Id"));
-                User user = new User(rs.getString("User_Id"),
+                User user = new User(
+                        rs.getInt("User_Id"),
                         rs.getString("User_Name"),
                         rs.getDate("Create_Date").toLocalDate(),
                         rs.getString("Created_By"),
                         rs.getDate("Last_Update").toLocalDate(),
                         rs.getString("Last_Updated_By"),
                         rs.getString("Password"));
-                System.out.println(user.getUserName());
             } else {
                 Controller.throwAlert(text.getString("login_error_1"), text.getString("login_error_2"));
             }
@@ -66,6 +70,10 @@ public class UserController {
         } finally {
             try { rs.close(); } catch (Exception e) { /* Ignored */ }
             try { Controller.con.close(); } catch (Exception e) { /* Ignored */ }
+            Parent dashboard = FXMLLoader.load(getClass().getResource("../Views/dashboard.fxml"));
+            Stage stage = new Stage();
+            stage.setScene(new Scene(dashboard));
+            stage.show();
         }
 
     }

@@ -15,17 +15,17 @@
                <children>
                   <TableView fx:id="customer_table" layoutX="40.0" layoutY="33.0" prefHeight="461.0" prefWidth="1010.0">
                     <columns>
-                      <TableColumn prefWidth="52.0" text="ID" ><cellValueFactory><PropertyValueFactory property="id" /></cellValueFactory></TableColumn>
-                      <TableColumn prefWidth="169.0" text="Address" ><cellValueFactory><PropertyValueFactory property="address" /></cellValueFactory></TableColumn>
-                      <TableColumn prefWidth="81.0" text="Name" ><cellValueFactory><PropertyValueFactory property="name" /></cellValueFactory></TableColumn>
-                      <TableColumn prefWidth="89.0" text="Country" ><cellValueFactory><PropertyValueFactory property="country" /></cellValueFactory></TableColumn>
-                      <TableColumn prefWidth="79.0" text="Division" ><cellValueFactory><PropertyValueFactory property="division" /></cellValueFactory></TableColumn>
-                      <TableColumn prefWidth="83.0" text="Phone" ><cellValueFactory><PropertyValueFactory property="phone" /></cellValueFactory></TableColumn>
-                      <TableColumn prefWidth="89.0" text="Postal Code" ><cellValueFactory><PropertyValueFactory property="postal_code" /></cellValueFactory></TableColumn>
-                      <TableColumn prefWidth="84.0" text="Create Date"><cellValueFactory><PropertyValueFactory property="create_date" /></cellValueFactory></TableColumn>
-                      <TableColumn prefWidth="87.0" text="Created By"><cellValueFactory><PropertyValueFactory property="created_by" /></cellValueFactory></TableColumn>
-                      <TableColumn prefWidth="97.0" text="Last Update" ><cellValueFactory><PropertyValueFactory property="last_update" /></cellValueFactory></TableColumn>
-                      <TableColumn prefWidth="99.0" text="Last Updated By" ><cellValueFactory><PropertyValueFactory property="last_updated_by" /></cellValueFactory></TableColumn>
+                      <TableColumn prefWidth="52.0" fx:id="id" ><cellValueFactory><PropertyValueFactory property="id" /></cellValueFactory></TableColumn>
+                      <TableColumn prefWidth="169.0" fx:id="address" ><cellValueFactory><PropertyValueFactory property="address" /></cellValueFactory></TableColumn>
+                      <TableColumn prefWidth="81.0" fx:id="name" ><cellValueFactory><PropertyValueFactory property="name" /></cellValueFactory></TableColumn>
+                      <TableColumn prefWidth="89.0" fx:id="country" ><cellValueFactory><PropertyValueFactory property="country" /></cellValueFactory></TableColumn>
+                      <TableColumn prefWidth="79.0" fx:id="division" ><cellValueFactory><PropertyValueFactory property="division" /></cellValueFactory></TableColumn>
+                      <TableColumn prefWidth="83.0" fx:id="phone" ><cellValueFactory><PropertyValueFactory property="phone" /></cellValueFactory></TableColumn>
+                      <TableColumn prefWidth="89.0" fx:id="postal_code" ><cellValueFactory><PropertyValueFactory property="PostalCode" /></cellValueFactory></TableColumn>
+                      <TableColumn prefWidth="84.0" fx:id="create_date"><cellValueFactory><PropertyValueFactory property="CreateDate" /></cellValueFactory></TableColumn>
+                      <TableColumn prefWidth="87.0" fx:id="created_by"><cellValueFactory><PropertyValueFactory property="CreatedBy" /></cellValueFactory></TableColumn>
+                      <TableColumn prefWidth="97.0" fx:id="last_update" ><cellValueFactory><PropertyValueFactory property="UpdateDate" /></cellValueFactory></TableColumn>
+                      <TableColumn prefWidth="99.0" fx:id="updated_by" ><cellValueFactory><PropertyValueFactory property="UpdatedBy" /></cellValueFactory></TableColumn>
                     </columns>
                   </TableView>
                </children></AnchorPane>

@@ -1,29 +1,31 @@
 package Models;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 public class Customer {
     public int id;
     public String name;
     public String address;
-    public Date create_date;
-    public int created_by;
-    public int division_id;
-    public Date update_date;
-    public int updated_by;
+    public LocalDate create_date;
+    public String created_by;
+    public String division;
+    public String country;
+    public LocalDate update_date;
+    public String updated_by;
     public String phone;
     public String postal_code;
-//    public Division division;
-//    public Country country;
 //    public Appointments[] appointments;
 
-    public Customer(int id, String name, String address, Date create_date, int created_by, int division_id, Date update_date, int updated_by, String phone, String postal_code) {
+    public Customer(int id, String name, String address, LocalDate create_date, String created_by, String division, String country, LocalDate update_date, String updated_by, String phone, String postal_code) {
+        System.out.println(name + address + created_by);
         this.id = id;
         this.name = name;
         this.address = address;
         this.create_date = create_date;
         this.created_by = created_by;
-        this.division_id = division_id;
+        this.division = division;
+        this.country = country;
         this.update_date = update_date;
         this.updated_by = updated_by;
         this.phone = phone;
@@ -53,5 +55,68 @@ public class Customer {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * @return updated by
+     */
+    public String getUpdatedBy() {
+        return updated_by;
+    }
+
+    /**
+     * @return address
+     */
+    public String getAddress() {
+        return address;
+    }
+
+    /**
+     * @return country
+     */
+    public String getCountry() {
+        return country;
+    }
+
+    /**
+     * @return division
+     */
+    public String getDivision() {
+        return division;
+    }
+
+    /**
+     * @return phone
+     */
+    public String getPhone() {
+        return phone;
+    }
+
+    /**
+     * @return postal code
+     */
+    public String getPostalCode() {
+        return postal_code;
+    }
+
+    /**
+     * @return Create Date
+     */
+    public LocalDate getCreateDate() {
+        return create_date;
+    }
+
+    /**
+     * @return Create Date
+     */
+    public LocalDate getUpdateDate() {
+        return update_date;
+    }
+
+    /**
+     * @return Created By
+     */
+    public String getCreatedBy() {
+        return created_by;
     }
 }

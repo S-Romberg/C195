@@ -13,9 +13,9 @@ public class User {
     public LocalDate update_date;
     public String updated_by;
 
-    public User(String id, String user_name, LocalDate create_date, String created_by, LocalDate update_date, String updated_by, String password) throws ParseException {
+    public User(int id, String user_name, LocalDate create_date, String created_by, LocalDate update_date, String updated_by, String password) throws ParseException {
         System.out.println(id + user_name + create_date + created_by + update_date + updated_by + password);
-        this.id = Integer.parseInt(id);
+        this.id = id;
         this.user_name = user_name;
         this.password = password;
         this.create_date = create_date;
