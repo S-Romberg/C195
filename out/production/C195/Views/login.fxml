@@ -39,11 +39,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.PasswordField?>
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.UserController">
   <children>
     <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
       <children>
-            <TextField fx:id="password_field" layoutX="214.0" layoutY="208.0" />
+            <PasswordField fx:id="password_field" layoutX="214.0" layoutY="208.0"/>
             <TextField fx:id="id_field" layoutX="214.0" layoutY="148.0" />
             <Label fx:id="user_label" layoutX="213.0" layoutY="130.0" />
             <Label fx:id="password_label" layoutX="215.0" layoutY="192.0" />

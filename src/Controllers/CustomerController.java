@@ -4,8 +4,11 @@ import Models.Customer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,36 +42,74 @@ public class CustomerController {
     private TableColumn<Customer, LocalDate> last_update;
     @FXML
     private TableColumn<Customer, String> updated_by;
+    @FXML
+    private TextField edit_address;
+    @FXML
+    private TextField edit_name;
+    @FXML
+    private ChoiceBox<String> edit_country;
+    @FXML
+    private ChoiceBox<String> edit_division;
+    @FXML
+    private TextField edit_postal_code;
+    @FXML
+    private TextField edit_phone;
+    @FXML
+    private Button save_button;
 
     public static ObservableList<Customer> allCustomers = FXCollections.observableArrayList();
+    public static ObservableList<String> allDivisions = FXCollections.observableArrayList();
+    public static ObservableList<String> allCountries = FXCollections.observableArrayList();
+
+    private static Customer selectedCustomer;
+    private static String currentCountry;
     ResourceBundle text;
     ResultSet rs;
 
     public void initialize() {
         Controller.connectToAndQueryDatabase();
         setLocalDefault();
-        getCustomers();
-        customer_table.setItems(allCustomers);
+        if (customer_table != null) {
+            getCustomers();
+            customer_table.setItems(allCustomers);
+        } else {
+            getCountries();
+            getDivisions();
+            setFormValues();
+        }
     }
 
-    public static void addCustomer(Customer newCustomer){
-        allCustomers.add(newCustomer);
+    private void setFormValues() {
+        edit_country.setItems(allCountries);
+        edit_division.setItems(allDivisions);
+
+        if (selectedCustomer != null) {
+            edit_address.setText(selectedCustomer.getAddress());
+            edit_name.setText(selectedCustomer.getName());
+//          edit_country.
+//          edit_division.
+            edit_phone.setText(selectedCustomer.getPhone());
+            edit_postal_code.setText(selectedCustomer.getPostalCode());
+            save_button.setOnMouseClicked(e -> Customer.updateCustomer());
+        }
     }
 
     private void setLocalDefault() {
         Locale currentLocale = Locale.getDefault();
         text = ResourceBundle.getBundle("TextBundle", currentLocale);
-        id.setText(text.getString("id"));
-        address.setText(text.getString("address"));
-        name.setText(text.getString("name"));
-        country.setText(text.getString("country"));
-        division.setText(text.getString("division"));
-        phone.setText(text.getString("phone"));
-        postal_code.setText(text.getString("postal_code"));
-        create_date.setText(text.getString("create_date"));
-        created_by.setText(text.getString("created_by"));
-        last_update.setText(text.getString("last_update"));
-        updated_by.setText(text.getString("last_updated_by"));
+        if(customer_table != null) {
+            id.setText(text.getString("id"));
+            address.setText(text.getString("address"));
+            name.setText(text.getString("name"));
+            country.setText(text.getString("country"));
+            division.setText(text.getString("division"));
+            phone.setText(text.getString("phone"));
+            postal_code.setText(text.getString("postal_code"));
+            create_date.setText(text.getString("create_date"));
+            created_by.setText(text.getString("created_by"));
+            last_update.setText(text.getString("last_update"));
+            updated_by.setText(text.getString("last_updated_by"));
+        }
     }
 
     private void getCustomers() {
@@ -95,10 +136,86 @@ public class CustomerController {
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-        } finally {
-            try { rs.close(); } catch (Exception e) { /* Ignored */ }
-            try { Controller.con.close(); } catch (Exception e) { /* Ignored */ }
         }
+    }
+
+    private void getCountries() {
+        String query = "select * from countries";
+        try (Statement stmt = Controller.con.createStatement()) {
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                addCountry(rs.getString("Country"));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    // TODO: lamba for divisions limited by country?
+
+    private void getDivisions() {
+        String query;
+        if (currentCountry != null) {
+            query = "select * from first_level_divisions where Country_Id = 1";
+        } else {
+            query = "select * from first_level_divisions";
+        }
+        try (Statement stmt = Controller.con.createStatement()) {
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                addDivision(rs.getString("Division"));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+//        finally {
+//            try { rs.close(); } catch (Exception e) { /* Ignored */ }
+//            try { Controller.con.close(); } catch (Exception e) { /* Ignored */ }
+//        }
+    }
+
+
+    /**
+     * creates add customer scene
+     */
+    public void addCustomer() throws Exception {
+        setSelectedCustomer(null);
+        Parent addCustomerPage = FXMLLoader.load(getClass().getResource("../Views/customer_form.fxml"));
+        Stage stage = new Stage();
+        stage.setScene(new Scene(addCustomerPage));
+        stage.show();
+    }
+
+    /**
+     * creates modify customer scene, sets selectedCustomer to customer selected on table
+     */
+    public void modifyCustomer() throws Exception {
+        Customer customer = customer_table.getSelectionModel().getSelectedItem();
+        setSelectedCustomer(customer);
+        if (customer == null) { Controller.throwAlert("Error: No selected customer", "Must select customer to modify"); return; }
+        Parent addCustomerPage = FXMLLoader.load(getClass().getResource("../Views/customer_form.fxml"));
+        Stage stage = new Stage();
+        stage.setScene(new Scene(addCustomerPage));
+        stage.show();
+    }
+
+    /**
+     * @param customer the selected customer in customer table
+     */
+    public static void setSelectedCustomer(Customer customer){
+        selectedCustomer = customer;
+    }
+
+    private static void addCustomer(Customer newCustomer){
+        allCustomers.add(newCustomer);
+    }
+
+    private static void addDivision(String newDivision){
+        allDivisions.add(newDivision);
+    }
+
+    private static void addCountry(String newCountry){
+        allCountries.add(newCountry);
     }
 
 }
