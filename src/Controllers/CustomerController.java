@@ -1,6 +1,7 @@
 package Controllers;
 
 import Models.Customer;
+import Models.Division;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -10,12 +11,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import javax.swing.event.ChangeListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 
 public class CustomerController {
     @FXML
@@ -58,11 +62,12 @@ public class CustomerController {
     private Button save_button;
 
     public static ObservableList<Customer> allCustomers = FXCollections.observableArrayList();
+    ArrayList<Division> divisions = new ArrayList<>();
     public static ObservableList<String> allDivisions = FXCollections.observableArrayList();
     public static ObservableList<String> allCountries = FXCollections.observableArrayList();
 
     private static Customer selectedCustomer;
-    private static String currentCountry;
+    private static int country_id;
     ResourceBundle text;
     ResultSet rs;
 
@@ -74,8 +79,9 @@ public class CustomerController {
             customer_table.setItems(allCustomers);
         } else {
             getCountries();
-            getDivisions();
+            getAndSetDivisions("");
             setFormValues();
+            edit_country.setOnAction(event -> getAndSetDivisions(edit_country.getValue()));
         }
     }
 
@@ -151,29 +157,31 @@ public class CustomerController {
         }
     }
 
-    // TODO: lamba for divisions limited by country?
-
-    private void getDivisions() {
-        String query;
-        if (currentCountry != null) {
-            query = "select * from first_level_divisions where Country_Id = 1";
-        } else {
-            query = "select * from first_level_divisions";
-        }
-        try (Statement stmt = Controller.con.createStatement()) {
-            rs = stmt.executeQuery(query);
-            while (rs.next()) {
-                addDivision(rs.getString("Division"));
+    private void getAndSetDivisions(String country) {
+        if (divisions.isEmpty()) {
+            String query;
+            query = "select * from first_level_divisions fld join countries c on fld.Country_ID = c.Country_ID";
+            try (Statement stmt = Controller.con.createStatement()) {
+                rs = stmt.executeQuery(query);
+                while (rs.next()) {
+                    Division division = new Division(rs.getString("Country"), rs.getString("Division"));
+                    divisions.add(division);
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
             }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } else  {
+            allDivisions.clear();
+            divisions.forEach(division -> updatedFilteredDivisions(division, country));
         }
-//        finally {
-//            try { rs.close(); } catch (Exception e) { /* Ignored */ }
-//            try { Controller.con.close(); } catch (Exception e) { /* Ignored */ }
-//        }
     }
 
+
+    public void updatedFilteredDivisions(Division division, String country) {
+        if(division.getCountry().equals(country)) {
+            allDivisions.add(division.getDivision());
+        }
+    }
 
     /**
      * creates add customer scene
@@ -208,10 +216,6 @@ public class CustomerController {
 
     private static void addCustomer(Customer newCustomer){
         allCustomers.add(newCustomer);
-    }
-
-    private static void addDivision(String newDivision){
-        allDivisions.add(newDivision);
     }
 
     private static void addCountry(String newCountry){
