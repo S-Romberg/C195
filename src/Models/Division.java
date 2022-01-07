@@ -1,13 +1,23 @@
 package Models;
 
 public class Division {
+    public int id;
     public String country;
     public String division;
 
-    public Division(String country, String division) {
+    public Division(int id, String country, String division) {
+        this.id = id;
         this.country = country;
         this.division = division;
     }
+
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
+    }
+
 
     /**
      * @return the country

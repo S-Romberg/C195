@@ -31,8 +31,9 @@
                     </columns>
                   </TableView>
                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" />
-               <Button layoutX="953.0" layoutY="521.0" mnemonicParsing="false" onMouseClicked="#addCustomer" text="Add" />
-               <Button layoutX="1006.0" layoutY="521.0" mnemonicParsing="false" onMouseClicked="#modifyCustomer" text="Modify" />
+               <Button fx:id="add_button"  layoutX="880.0" layoutY="521.0" mnemonicParsing="false" onMouseClicked="#addCustomer" text="Create" />
+               <Button fx:id="modify_button" layoutX="943.0" layoutY="521.0" mnemonicParsing="false" onMouseClicked="#modifyCustomer" text="Modify" />
+                  <Button fx:id="delete_button" layoutX="1007.0" layoutY="521.0" mnemonicParsing="false" onMouseClicked="#deleteCustomer" text="Delete" />
                </children>
         </AnchorPane>
       </content>

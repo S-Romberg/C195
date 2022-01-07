@@ -1,6 +1,5 @@
 package Models;
 
-import java.sql.Date;
 import java.time.LocalDate;
 
 public class Customer {
@@ -15,6 +14,7 @@ public class Customer {
     public String updated_by;
     public String phone;
     public String postal_code;
+
 //    public Appointments[] appointments;
 
     public Customer(int id, String name, String address, LocalDate create_date, String created_by, String division, String country, LocalDate update_date, String updated_by, String phone, String postal_code) {
@@ -188,9 +188,5 @@ public class Customer {
      */
     public void setCreatedBy(String created_by) {
          this.created_by = created_by;
-    }
-
-
-    public static void updateCustomer() {
     }
 }

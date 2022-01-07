@@ -11,15 +11,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
-import javax.swing.event.ChangeListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.function.Predicate;
+
+import static Controllers.Controller.throwAlert;
 
 public class CustomerController {
     @FXML
@@ -47,6 +48,8 @@ public class CustomerController {
     @FXML
     private TableColumn<Customer, String> updated_by;
     @FXML
+    private TextField edit_id;
+    @FXML
     private TextField edit_address;
     @FXML
     private TextField edit_name;
@@ -60,6 +63,12 @@ public class CustomerController {
     private TextField edit_phone;
     @FXML
     private Button save_button;
+    @FXML
+    private Button delete_button;
+    @FXML
+    private Button add_button;
+    @FXML
+    private Button modify_button;
 
     public static ObservableList<Customer> allCustomers = FXCollections.observableArrayList();
     ArrayList<Division> divisions = new ArrayList<>();
@@ -67,7 +76,6 @@ public class CustomerController {
     public static ObservableList<String> allCountries = FXCollections.observableArrayList();
 
     private static Customer selectedCustomer;
-    private static int country_id;
     ResourceBundle text;
     ResultSet rs;
 
@@ -90,13 +98,16 @@ public class CustomerController {
         edit_division.setItems(allDivisions);
 
         if (selectedCustomer != null) {
+            edit_id.setText(String.valueOf(selectedCustomer.getId()));
             edit_address.setText(selectedCustomer.getAddress());
             edit_name.setText(selectedCustomer.getName());
-//          edit_country.
-//          edit_division.
+            edit_country.setValue(selectedCustomer.getCountry());
+            edit_division.setValue(selectedCustomer.getDivision());
             edit_phone.setText(selectedCustomer.getPhone());
             edit_postal_code.setText(selectedCustomer.getPostalCode());
-            save_button.setOnMouseClicked(e -> Customer.updateCustomer());
+            save_button.setOnMouseClicked(e -> updateCustomer());
+        } else {
+            save_button.setOnMouseClicked(e -> createCustomer());
         }
     }
 
@@ -115,10 +126,14 @@ public class CustomerController {
             created_by.setText(text.getString("created_by"));
             last_update.setText(text.getString("last_update"));
             updated_by.setText(text.getString("last_updated_by"));
+            add_button.setText(text.getString("add"));
+            modify_button.setText(text.getString("modify"));
+            delete_button.setText(text.getString("delete"));
         }
     }
 
     private void getCustomers() {
+        allCustomers.clear();
         String query = "select * from customers " +
                 "join first_level_divisions fld on customers.Division_ID = fld.Division_ID " +
                 "join countries c on fld.Country_ID = c.Country_ID;";
@@ -164,8 +179,9 @@ public class CustomerController {
             try (Statement stmt = Controller.con.createStatement()) {
                 rs = stmt.executeQuery(query);
                 while (rs.next()) {
-                    Division division = new Division(rs.getString("Country"), rs.getString("Division"));
+                    Division division = new Division(rs.getInt("Division_ID"), rs.getString("Country"), rs.getString("Division"));
                     divisions.add(division);
+                    allDivisions.add(division.getDivision());
                 }
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
@@ -176,6 +192,15 @@ public class CustomerController {
         }
     }
 
+    public Division findDivision(String name) {
+        Division match = null;
+        for (Division d : divisions) {
+            if (d.getDivision().equals(name)) {
+                match = d;
+            }
+        };
+        return match;
+    }
 
     public void updatedFilteredDivisions(Division division, String country) {
         if(division.getCountry().equals(country)) {
@@ -200,11 +225,76 @@ public class CustomerController {
     public void modifyCustomer() throws Exception {
         Customer customer = customer_table.getSelectionModel().getSelectedItem();
         setSelectedCustomer(customer);
-        if (customer == null) { Controller.throwAlert("Error: No selected customer", "Must select customer to modify"); return; }
+        if (customer == null) { throwAlert("Error: No selected customer", "Must select customer to modify"); return; }
         Parent addCustomerPage = FXMLLoader.load(getClass().getResource("../Views/customer_form.fxml"));
         Stage stage = new Stage();
         stage.setScene(new Scene(addCustomerPage));
         stage.show();
+    }
+
+    public void createCustomer() {
+        String address = edit_address.getText();
+        String name = edit_name.getText();
+        Division division = findDivision(edit_division.getValue());
+        String postal_code = edit_postal_code.getText();
+        String phone = edit_phone.getText();
+        Date current_date = new Date(System.currentTimeMillis());
+        String current_user = UserController.user.getUserName();
+        // String.format("u1=%s;u2=%s;u3=%s;u4=%s;", u1, u2, u3, u4);
+        String query = String.format("INSERT into customers " +
+                "(Address, Create_Date, Created_By, Customer_Name, Division_ID, Last_Update, Last_Updated_By, Phone, Postal_Code)" +
+                " VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');", address, current_date, current_user, name, division.getId(), current_date, current_user, phone, postal_code);
+        try (Statement stmt = Controller.con.createStatement()) {
+            if (stmt.executeUpdate(query) == 1) {
+                getCustomers();
+                close();
+            } else {
+                throwAlert("Something went wrong", "Something went wrong");
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+    }
+
+    public void updateCustomer() {
+        int id = Integer.parseInt(edit_id.getText());
+        String address = edit_address.getText();
+        String name = edit_name.getText();
+        Division division = findDivision(edit_division.getValue());
+        String postal_code = edit_postal_code.getText();
+        String phone = edit_phone.getText();
+        String query = String.format(
+                "UPDATE customers SET Address = '%s', Customer_Name = '%s', Division_ID = '%s', Phone = '%s', Postal_Code = '%s', Last_Update = '%s'," +
+                        " Last_Updated_By = '%s' WHERE Customer_ID = '%s';",
+                address, name, division.getId(), phone, postal_code, new Date(System.currentTimeMillis()), UserController.user.getUserName(), id);
+        try (Statement stmt = Controller.con.createStatement()) {
+            if (stmt.executeUpdate(query) == 1) {
+                getCustomers();
+                close();
+            } else {
+                throwAlert("Something went wrong", "Something went wrong");
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+    }
+
+    public void deleteCustomer() {
+        Customer customer = customer_table.getSelectionModel().getSelectedItem();
+        setSelectedCustomer(customer);
+        if (customer == null) { throwAlert("Error: No selected customer", "Must select customer to delete"); return; }
+        int id = selectedCustomer.getId();
+        // String.format("u1=%s;u2=%s;u3=%s;u4=%s;", u1, u2, u3, u4);
+        String query = String.format("DELETE from customers WHERE Customer_ID = '%s';", id);
+        try (Statement stmt = Controller.con.createStatement()) {
+            if (stmt.executeUpdate(query) == 1) {
+                getCustomers();
+            } else {
+                throwAlert("Something went wrong", "Something went wrong");
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
     }
 
     /**
@@ -222,4 +312,16 @@ public class CustomerController {
         allCountries.add(newCountry);
     }
 
+    /**
+     * closes scene
+     */
+    public void close() {
+        Stage stage;
+        if (customer_table != null) {
+            stage = (Stage) customer_table.getScene().getWindow();
+        } else {
+            stage = (Stage) edit_address.getScene().getWindow();
+        }
+        stage.close();
+    }
 }

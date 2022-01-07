@@ -32,6 +32,7 @@ public class UserController {
     @FXML
     private Label location_label;
 
+    public static User user;
     String user_id;
     String password;
     ResourceBundle text;
@@ -53,7 +54,7 @@ public class UserController {
         try (Statement stmt = Controller.con.createStatement()) {
             rs = stmt.executeQuery(query);
             if (rs.next()) {
-                User user = new User(
+                user = new User(
                         rs.getInt("User_Id"),
                         rs.getString("User_Name"),
                         rs.getDate("Create_Date").toLocalDate(),
