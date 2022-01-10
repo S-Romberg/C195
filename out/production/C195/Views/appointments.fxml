@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="575.0" prefWidth="1098.0" xmlns="http://javafx.com/javafx/15.0.1"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AppointmentController">
+    <TableView fx:id="appointment_table" layoutX="53.0" layoutY="32.0" prefHeight="461.0" prefWidth="1010.0">
+        <columns>
+            <TableColumn fx:id="id" prefWidth="52.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="id"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="create_date" prefWidth="84.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="description"/>
+                </cellValueFactory>
+            </TableColumn>
+        </columns>
+    </TableView>
+    <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0"/>
+    <Button fx:id="add_button" layoutX="880.0" layoutY="521.0" mnemonicParsing="false" onMouseClicked="#addAppointment"
+            text="Create"/>
+    <Button fx:id="modify_button" layoutX="943.0" layoutY="521.0" mnemonicParsing="false"
+            onMouseClicked="#modifyAppointment" text="Modify"/>
+    <Button fx:id="delete_button" layoutX="1007.0" layoutY="521.0" mnemonicParsing="false"
+            onMouseClicked="#deleteAppointment" text="Delete"/>
+</AnchorPane>
+

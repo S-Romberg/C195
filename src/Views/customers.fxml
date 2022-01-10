@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="575.0" prefWidth="1098.0" xmlns="http://javafx.com/javafx/15.0.1"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.CustomerController">
+    <TableView fx:id="customer_table" layoutX="53.0" layoutY="32.0" prefHeight="461.0" prefWidth="1010.0">
+        <columns>
+            <TableColumn fx:id="id" prefWidth="52.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="id"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="address" prefWidth="169.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="address"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="name" prefWidth="81.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="name"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="country" prefWidth="89.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="country"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="division" prefWidth="79.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="division"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="phone" prefWidth="83.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="phone"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="postal_code" prefWidth="89.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="PostalCode"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="create_date" prefWidth="84.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="CreateDate"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="created_by" prefWidth="87.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="CreatedBy"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="last_update" prefWidth="97.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="UpdateDate"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="updated_by" prefWidth="99.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="UpdatedBy"/>
+                </cellValueFactory>
+            </TableColumn>
+        </columns>
+    </TableView>
+    <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0"/>
+    <Button fx:id="add_button" layoutX="880.0" layoutY="521.0" mnemonicParsing="false" onMouseClicked="#addCustomer"
+            text="Create"/>
+    <Button fx:id="modify_button" layoutX="943.0" layoutY="521.0" mnemonicParsing="false"
+            onMouseClicked="#modifyCustomer" text="Modify"/>
+    <Button fx:id="delete_button" layoutX="1007.0" layoutY="521.0" mnemonicParsing="false"
+            onMouseClicked="#deleteCustomer" text="Delete"/>
+</AnchorPane>

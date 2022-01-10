@@ -38,7 +38,7 @@ public class UserController {
     ResourceBundle text;
     ResultSet rs;
     public void initialize() {
-        Controller.connectToAndQueryDatabase();
+        Helper.connectToAndQueryDatabase();
         Locale currentLocale = Locale.getDefault();
         text = ResourceBundle.getBundle("TextBundle", currentLocale);
         location_label.setText(currentLocale.getDisplayLanguage() + ", " + currentLocale.getDisplayCountry());
@@ -51,7 +51,7 @@ public class UserController {
         user_id = id_field.getText();
         password = password_field.getText();
         String query = "SELECT * FROM users WHERE User_id = '" + user_id + "' AND Password = '" + password + "';";
-        try (Statement stmt = Controller.con.createStatement()) {
+        try (Statement stmt = Helper.con.createStatement()) {
             rs = stmt.executeQuery(query);
             if (rs.next()) {
                 user = new User(
@@ -63,14 +63,14 @@ public class UserController {
                         rs.getString("Last_Updated_By"),
                         rs.getString("Password"));
             } else {
-                Controller.throwAlert(text.getString("login_error_1"), text.getString("login_error_2"));
+                Helper.throwAlert(text.getString("login_error_1"), text.getString("login_error_2"));
             }
 
         } catch (SQLException | ParseException throwables) {
             throwables.printStackTrace();
         } finally {
             try { rs.close(); } catch (Exception e) { /* Ignored */ }
-            try { Controller.con.close(); } catch (Exception e) { /* Ignored */ }
+            try { Helper.con.close(); } catch (Exception e) { /* Ignored */ }
             Parent dashboard = FXMLLoader.load(getClass().getResource("../Views/dashboard.fxml"));
             Stage stage = new Stage();
             stage.setScene(new Scene(dashboard));

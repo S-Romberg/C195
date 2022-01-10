@@ -20,55 +20,32 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import static Controllers.Controller.throwAlert;
+import static Controllers.Helper.throwAlert;
 
 public class CustomerController {
-    @FXML
-    private TableView<Customer> customer_table;
-    @FXML
-    private TableColumn<Customer, Integer> id;
-    @FXML
-    private TableColumn<Customer, String> address;
-    @FXML
-    private TableColumn<Customer, String> name;
-    @FXML
-    private TableColumn<Customer, String> country;
-    @FXML
-    private TableColumn<Customer, String> division;
-    @FXML
-    private TableColumn<Customer, String> phone;
-    @FXML
-    private TableColumn<Customer, String> postal_code;
-    @FXML
-    private TableColumn<Customer, LocalDate> create_date;
-    @FXML
-    private TableColumn<Customer, String> created_by;
-    @FXML
-    private TableColumn<Customer, LocalDate> last_update;
-    @FXML
-    private TableColumn<Customer, String> updated_by;
-    @FXML
-    private TextField edit_id;
-    @FXML
-    private TextField edit_address;
-    @FXML
-    private TextField edit_name;
-    @FXML
-    private ChoiceBox<String> edit_country;
-    @FXML
-    private ChoiceBox<String> edit_division;
-    @FXML
-    private TextField edit_postal_code;
-    @FXML
-    private TextField edit_phone;
-    @FXML
-    private Button save_button;
-    @FXML
-    private Button delete_button;
-    @FXML
-    private Button add_button;
-    @FXML
-    private Button modify_button;
+    @FXML private TableView<Customer> customer_table;
+    @FXML private TableColumn<Customer, Integer> id;
+    @FXML private TableColumn<Customer, String> address;
+    @FXML private TableColumn<Customer, String> name;
+    @FXML private TableColumn<Customer, String> country;
+    @FXML private TableColumn<Customer, String> division;
+    @FXML private TableColumn<Customer, String> phone;
+    @FXML private TableColumn<Customer, String> postal_code;
+    @FXML private TableColumn<Customer, LocalDate> create_date;
+    @FXML private TableColumn<Customer, String> created_by;
+    @FXML private TableColumn<Customer, LocalDate> last_update;
+    @FXML private TableColumn<Customer, String> updated_by;
+    @FXML private TextField edit_id;
+    @FXML private TextField edit_address;
+    @FXML private TextField edit_name;
+    @FXML private ChoiceBox<String> edit_country;
+    @FXML private ChoiceBox<String> edit_division;
+    @FXML private TextField edit_postal_code;
+    @FXML private TextField edit_phone;
+    @FXML private Button save_button;
+    @FXML private Button delete_button;
+    @FXML private Button add_button;
+    @FXML private Button modify_button;
 
     public static ObservableList<Customer> allCustomers = FXCollections.observableArrayList();
     ArrayList<Division> divisions = new ArrayList<>();
@@ -80,7 +57,7 @@ public class CustomerController {
     ResultSet rs;
 
     public void initialize() {
-        Controller.connectToAndQueryDatabase();
+        Helper.connectToAndQueryDatabase();
         setLocalDefault();
         if (customer_table != null) {
             getCustomers();
@@ -137,7 +114,7 @@ public class CustomerController {
         String query = "select * from customers " +
                 "join first_level_divisions fld on customers.Division_ID = fld.Division_ID " +
                 "join countries c on fld.Country_ID = c.Country_ID;";
-        try (Statement stmt = Controller.con.createStatement()) {
+        try (Statement stmt = Helper.con.createStatement()) {
             rs = stmt.executeQuery(query);
             while (rs.next()) {
                 Customer customer = new Customer(
@@ -162,7 +139,7 @@ public class CustomerController {
 
     private void getCountries() {
         String query = "select * from countries";
-        try (Statement stmt = Controller.con.createStatement()) {
+        try (Statement stmt = Helper.con.createStatement()) {
             rs = stmt.executeQuery(query);
             while (rs.next()) {
                 addCountry(rs.getString("Country"));
@@ -176,7 +153,7 @@ public class CustomerController {
         if (divisions.isEmpty()) {
             String query;
             query = "select * from first_level_divisions fld join countries c on fld.Country_ID = c.Country_ID";
-            try (Statement stmt = Controller.con.createStatement()) {
+            try (Statement stmt = Helper.con.createStatement()) {
                 rs = stmt.executeQuery(query);
                 while (rs.next()) {
                     Division division = new Division(rs.getInt("Division_ID"), rs.getString("Country"), rs.getString("Division"));
@@ -201,6 +178,17 @@ public class CustomerController {
         };
         return match;
     }
+
+    public static Customer findCustomer(int id) {
+        Customer match = null;
+        for (Customer d : allCustomers) {
+            if (d.getId() == id) {
+                match = d;
+            }
+        };
+        return match;
+    }
+
 
     public void updatedFilteredDivisions(Division division, String country) {
         if(division.getCountry().equals(country)) {
@@ -244,7 +232,7 @@ public class CustomerController {
         String query = String.format("INSERT into customers " +
                 "(Address, Create_Date, Created_By, Customer_Name, Division_ID, Last_Update, Last_Updated_By, Phone, Postal_Code)" +
                 " VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');", address, current_date, current_user, name, division.getId(), current_date, current_user, phone, postal_code);
-        try (Statement stmt = Controller.con.createStatement()) {
+        try (Statement stmt = Helper.con.createStatement()) {
             if (stmt.executeUpdate(query) == 1) {
                 getCustomers();
                 close();
@@ -267,7 +255,7 @@ public class CustomerController {
                 "UPDATE customers SET Address = '%s', Customer_Name = '%s', Division_ID = '%s', Phone = '%s', Postal_Code = '%s', Last_Update = '%s'," +
                         " Last_Updated_By = '%s' WHERE Customer_ID = '%s';",
                 address, name, division.getId(), phone, postal_code, new Date(System.currentTimeMillis()), UserController.user.getUserName(), id);
-        try (Statement stmt = Controller.con.createStatement()) {
+        try (Statement stmt = Helper.con.createStatement()) {
             if (stmt.executeUpdate(query) == 1) {
                 getCustomers();
                 close();
@@ -284,9 +272,8 @@ public class CustomerController {
         setSelectedCustomer(customer);
         if (customer == null) { throwAlert("Error: No selected customer", "Must select customer to delete"); return; }
         int id = selectedCustomer.getId();
-        // String.format("u1=%s;u2=%s;u3=%s;u4=%s;", u1, u2, u3, u4);
         String query = String.format("DELETE from customers WHERE Customer_ID = '%s';", id);
-        try (Statement stmt = Controller.con.createStatement()) {
+        try (Statement stmt = Helper.con.createStatement()) {
             if (stmt.executeUpdate(query) == 1) {
                 getCustomers();
             } else {

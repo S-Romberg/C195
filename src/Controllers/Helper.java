@@ -140,7 +140,7 @@ import java.sql.*;
 //
 //
 //F.  Demonstrate professional communication in the content and presentation of your submission.
-public class Controller {
+public class Helper {
     public static Connection con;
 
     public static void connectToAndQueryDatabase() {
