@@ -71,8 +71,10 @@ public class AppointmentController {
 
     public void initialize() {
         Helper.connectToAndQueryDatabase();
-        getAppointments();
-        appointment_table.setItems(allAppointments);
+        if (appointment_table != null) {
+            getAppointments();
+            appointment_table.setItems(allAppointments);
+        }
         setLocalDefault();
     }
 
