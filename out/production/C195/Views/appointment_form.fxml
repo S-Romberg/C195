@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane minHeight="0" minWidth="0" prefHeight="448.0" prefWidth="568.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AppointmentController">
+      <Label fx:id="id_label" layoutX="112.0" layoutY="75.0" text="ID" />
+      <TextField fx:id="edit_id" editable="false" layoutX="112.0" layoutY="94.0" />
+      <Label fx:id="contact_label" layoutX="112.0" layoutY="239.0" text="Contact" />
+      <Label fx:id="customer_label" layoutX="112.0" layoutY="186.0" text="Customer" />
+      <Label fx:id="description_label" layoutX="309.0" layoutY="295.0" text="Description" />
+      <TextField fx:id="edit_description" layoutX="309.0" layoutY="314.0" />
+      <Label fx:id="location_label" layoutX="112.0" layoutY="130.0" text="Location" />
+      <TextField fx:id="edit_location" layoutX="112.0" layoutY="149.0" />
+      <ChoiceBox fx:id="edit_contact" layoutX="112.0" layoutY="257.0" prefHeight="27.0" prefWidth="160.0" />
+      <ChoiceBox fx:id="edit_customer" layoutX="112.0" layoutY="207.0" prefHeight="27.0" prefWidth="160.0" />
+      <DatePicker fx:id="edit_start" layoutX="309.0" layoutY="92.0" prefHeight="27.0" prefWidth="160.0" />
+      <Label fx:id="start_label" layoutX="309.0" layoutY="73.0" text="Start Time" />
+      <Label fx:id="end_label" layoutX="309.0" layoutY="128.0" text="End Time" />
+      <DatePicker fx:id="edit_end" layoutX="309.0" layoutY="146.0" prefHeight="27.0" prefWidth="160.0" />
+      <Label fx:id="title_label" layoutX="309.0" layoutY="182.0" text="Title" />
+      <TextField fx:id="edit_title" layoutX="309.0" layoutY="201.0" />
+      <Label fx:id="type_label" layoutX="309.0" layoutY="236.0" text="Type" />
+      <TextField fx:id="edit_type" layoutX="309.0" layoutY="255.0" />
+      <Label fx:id="user_label" layoutX="112.0" layoutY="295.0" text="User" />
+      <ChoiceBox fx:id="edit_user" layoutX="112.0" layoutY="316.0" prefHeight="27.0" prefWidth="160.0" />
+      <Button fx:id="save_button" layoutX="423.0" layoutY="386.0" mnemonicParsing="false" text="Save" />
+      <Button fx:id="cancel_button" layoutX="354.0" layoutY="386.0" mnemonicParsing="false" text="Cancel" />
+      <TitledPane animated="false" layoutX="222.0" layoutY="-116.0" text="untitled" />
+</Pane>
