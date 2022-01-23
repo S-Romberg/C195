@@ -63,7 +63,6 @@ public class AppointmentController {
     @FXML private Button delete_button;
 
     public static ObservableList<Appointment> allAppointments = FXCollections.observableArrayList();
-
     private static Appointment selectedAppointment;
     ResourceBundle text;
     ResultSet rs;
@@ -74,6 +73,11 @@ public class AppointmentController {
         if (appointment_table != null) {
             getAppointments();
             appointment_table.setItems(allAppointments);
+        } else if (edit_user != null){
+            UserController.getAllUsers();
+            CustomerController.getCustomers();
+            edit_user.setItems(UserController.allUsers);
+            edit_customer.setItems(CustomerController.allCustomers);
         }
         setLocalDefault();
     }
@@ -148,11 +152,16 @@ public class AppointmentController {
     }
 
     public void createAppointment() {
-//        String address = edit_address.getText();
-//        String name = edit_name.getText();
-//        Division division = findDivision(edit_division.getValue());
-//        String postal_code = edit_postal_code.getText();
-//        String phone = edit_phone.getText();
+        // String location = edit_location;
+        // String contact = edit_contact;
+        // Customer customer = edit_customer;
+        // User user = edit_user;
+        // LocalDate start = edit_start;
+        // LocalDate end = edit_end;
+        // String title = edit_title;
+        // String type = edit_type;
+        // String description = edit_description;
+
         Date current_date = new Date(System.currentTimeMillis());
         String current_user = UserController.user.getUserName();
         // String.format("u1=%s;u2=%s;u3=%s;u4=%s;", u1, u2, u3, u4);
@@ -226,7 +235,7 @@ public class AppointmentController {
         if (appointment_table != null) {
             stage = (Stage) appointment_table.getScene().getWindow();
         } else {
-            stage = (Stage) appointment_table.getScene().getWindow();
+            stage = (Stage) edit_id.getScene().getWindow();
         }
         stage.close();
     }

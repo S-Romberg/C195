@@ -23,6 +23,7 @@ import java.util.ResourceBundle;
 import static Controllers.Helper.throwAlert;
 
 public class CustomerController {
+    private static ResultSet rs;
     @FXML private TableView<Customer> customer_table;
     @FXML private TableColumn<Customer, Integer> id;
     @FXML private TableColumn<Customer, String> address;
@@ -54,7 +55,6 @@ public class CustomerController {
 
     private static Customer selectedCustomer;
     ResourceBundle text;
-    ResultSet rs;
 
     public void initialize() {
         Helper.connectToAndQueryDatabase();
@@ -109,7 +109,7 @@ public class CustomerController {
         }
     }
 
-    private void getCustomers() {
+    public static void getCustomers() {
         allCustomers.clear();
         String query = "select * from customers " +
                 "join first_level_divisions fld on customers.Division_ID = fld.Division_ID " +

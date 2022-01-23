@@ -189,4 +189,9 @@ public class Customer {
     public void setCreatedBy(String created_by) {
          this.created_by = created_by;
     }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

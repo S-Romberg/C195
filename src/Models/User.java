@@ -44,4 +44,9 @@ public class User {
     public void setUserName(String name) {
         this.user_name = name;
     }
+
+    @Override
+    public String toString() {
+        return getUserName();
+    }
 }
