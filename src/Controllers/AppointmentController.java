@@ -16,7 +16,9 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -27,8 +29,8 @@ public class AppointmentController {
     @FXML private ChoiceBox<Contact> edit_contact;
     @FXML private ChoiceBox<Customer> edit_customer;
     @FXML private ChoiceBox<User> edit_user;
-    @FXML private DatePicker edit_start;
-    @FXML private DatePicker edit_end;
+    @FXML private TextField edit_start;
+    @FXML private TextField edit_end;
     @FXML private TextField edit_title;
     @FXML private TextField edit_type;
     @FXML private TextField edit_description;
@@ -45,12 +47,12 @@ public class AppointmentController {
     @FXML private Label user_label;
     @FXML private TableColumn<Appointment, Integer>  id;
     @FXML private TableColumn<Appointment, String> updated_by;
-    @FXML private TableColumn<Appointment, LocalDate>  last_update;
+    @FXML private TableColumn<Appointment, LocalDateTime>  last_update;
     @FXML private TableColumn<Appointment, String>  created_by;
-    @FXML private TableColumn<Appointment, LocalDate>  create_date;
+    @FXML private TableColumn<Appointment, LocalDateTime>  create_date;
     @FXML private TableColumn<Appointment, String>  description;
-    @FXML private TableColumn<Appointment, LocalDate>  end_time;
-    @FXML private TableColumn<Appointment, LocalDate>  start_time;
+    @FXML private TableColumn<Appointment, LocalDateTime>  end_time;
+    @FXML private TableColumn<Appointment, LocalDateTime>  start_time;
     @FXML private TableColumn<Appointment, String>  location_string;
     @FXML private TableColumn<Appointment, String>  title;
     @FXML private TableColumn<Appointment, String>  type;
@@ -61,6 +63,8 @@ public class AppointmentController {
     @FXML private Button modify_button;
     @FXML private Button add_button;
     @FXML private Button delete_button;
+    @FXML private Button save_button;
+    @FXML private Button cancel_button;
 
     public static ObservableList<Appointment> allAppointments = FXCollections.observableArrayList();
     private static Appointment selectedAppointment;
@@ -76,8 +80,10 @@ public class AppointmentController {
         } else if (edit_user != null){
             UserController.getAllUsers();
             CustomerController.getCustomers();
+            ContactController.getAllContacts();
             edit_user.setItems(UserController.allUsers);
             edit_customer.setItems(CustomerController.allCustomers);
+            edit_contact.setItems(ContactController.allContacts);
         }
         setLocalDefault();
     }
@@ -102,6 +108,20 @@ public class AppointmentController {
             add_button.setText(text.getString("add"));
             modify_button.setText(text.getString("modify"));
             delete_button.setText(text.getString("delete"));
+        } else {
+            id_label.setText(text.getString("id"));
+            description_label.setText(text.getString("description"));
+            location_label.setText(text.getString("location"));
+            contact_label.setText(text.getString("contact"));
+            customer_label.setText(text.getString("customer"));
+            user_label.setText(text.getString("user"));
+            start_label.setText(text.getString("start_time"));
+            end_label.setText(text.getString("end_time"));
+            title_label.setText(text.getString("title"));
+            type_label.setText(text.getString("type"));
+            cancel_button.setText(text.getString("cancel"));
+            save_button.setText(text.getString("save"));
+            save_button.setOnMouseClicked(e -> createAppointment());
         }
     }
 
@@ -113,14 +133,14 @@ public class AppointmentController {
             while (rs.next()) {
                 Appointment appointment = new Appointment(
                     rs.getInt("Appointment_ID"),
-                    rs.getDate("Create_Date").toLocalDate(),
+                    rs.getTimestamp("Create_Date").toLocalDateTime(),
                     rs.getString("Created_By"),
-                    rs.getDate("Last_Update").toLocalDate(),
+                    rs.getTimestamp("Last_Update").toLocalDateTime(),
                     rs.getString("Last_Updated_By"),
                     CustomerController.findCustomer(rs.getInt("Customer_ID")),
                     rs.getString("Description"),
-                    rs.getDate("End").toLocalDate(),
-                    rs.getDate("Start").toLocalDate(),
+                    rs.getTimestamp("End").toLocalDateTime(),
+                    rs.getTimestamp("Start").toLocalDateTime(),
                     rs.getString("Location"),
                     rs.getString("Title"),
                     rs.getString("Type"),
@@ -152,15 +172,24 @@ public class AppointmentController {
     }
 
     public void createAppointment() {
-        // String location = edit_location;
-        // String contact = edit_contact;
-        // Customer customer = edit_customer;
-        // User user = edit_user;
-        // LocalDate start = edit_start;
-        // LocalDate end = edit_end;
-        // String title = edit_title;
-        // String type = edit_type;
-        // String description = edit_description;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime start;
+        LocalDateTime end;
+        try {
+            end = LocalDateTime.parse(edit_end.getText(), formatter);
+            start = LocalDateTime.parse(edit_start.getText(), formatter);
+        } catch (Exception e) {
+            throwAlert("Bad date entered", "Date must match format yyyy-MM-dd HH:mm:ss");
+        }
+
+
+         String location = edit_location.getText();
+         Contact contact = edit_contact.getValue();
+         Customer customer = edit_customer.getValue();
+         User user = edit_user.getValue();
+         String title = edit_title.getText();
+         String type = edit_type.getText();
+         String description = edit_description.getText();
 
         Date current_date = new Date(System.currentTimeMillis());
         String current_user = UserController.user.getUserName();

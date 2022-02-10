@@ -62,9 +62,9 @@ public class UserController {
                 user = new User(
                         rs.getInt("User_Id"),
                         rs.getString("User_Name"),
-                        rs.getDate("Create_Date").toLocalDate(),
+                        rs.getTimestamp("Create_Date").toLocalDateTime(),
                         rs.getString("Created_By"),
-                        rs.getDate("Last_Update").toLocalDate(),
+                        rs.getTimestamp("Last_Update").toLocalDateTime(),
                         rs.getString("Last_Updated_By"),
                         rs.getString("Password"));
             } else {
@@ -96,9 +96,9 @@ public class UserController {
                 user = new User(
                         rs.getInt("User_Id"),
                         rs.getString("User_Name"),
-                        rs.getDate("Create_Date").toLocalDate(),
+                        rs.getTimestamp("Create_Date").toLocalDateTime(),
                         rs.getString("Created_By"),
-                        rs.getDate("Last_Update").toLocalDate(),
+                        rs.getTimestamp("Last_Update").toLocalDateTime(),
                         rs.getString("Last_Updated_By"),
                         rs.getString("Password"));
                 allUsers.add(user);

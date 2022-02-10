@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -32,9 +33,9 @@ public class CustomerController {
     @FXML private TableColumn<Customer, String> division;
     @FXML private TableColumn<Customer, String> phone;
     @FXML private TableColumn<Customer, String> postal_code;
-    @FXML private TableColumn<Customer, LocalDate> create_date;
+    @FXML private TableColumn<Customer, LocalDateTime> create_date;
     @FXML private TableColumn<Customer, String> created_by;
-    @FXML private TableColumn<Customer, LocalDate> last_update;
+    @FXML private TableColumn<Customer, LocalDateTime> last_update;
     @FXML private TableColumn<Customer, String> updated_by;
     @FXML private TextField edit_id;
     @FXML private TextField edit_address;
@@ -121,11 +122,11 @@ public class CustomerController {
                         rs.getInt("Customer_ID"),
                         rs.getString("Customer_Name"),
                         rs.getString("Address"),
-                        rs.getDate("Create_Date").toLocalDate(),
+                        rs.getTimestamp("Create_Date").toLocalDateTime(),
                         rs.getString("Created_By"),
                         rs.getString("Division"),
                         rs.getString("Country"),
-                        rs.getDate("Last_Update").toLocalDate(),
+                        rs.getTimestamp("Last_Update").toLocalDateTime(),
                         rs.getString("Last_Updated_By"),
                         rs.getString("Phone"),
                         rs.getString("Postal_Code")

@@ -1,23 +1,24 @@
 package Models;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Customer {
     public int id;
     public String name;
     public String address;
-    public LocalDate create_date;
+    public LocalDateTime create_date;
     public String created_by;
     public String division;
     public String country;
-    public LocalDate update_date;
+    public LocalDateTime update_date;
     public String updated_by;
     public String phone;
     public String postal_code;
 
 //    public Appointments[] appointments;
 
-    public Customer(int id, String name, String address, LocalDate create_date, String created_by, String division, String country, LocalDate update_date, String updated_by, String phone, String postal_code) {
+    public Customer(int id, String name, String address, LocalDateTime create_date, String created_by, String division, String country, LocalDateTime update_date, String updated_by, String phone, String postal_code) {
         System.out.println(name + address + created_by);
         this.id = id;
         this.name = name;
@@ -151,28 +152,28 @@ public class Customer {
     /**
      * @return Create Date
      */
-    public LocalDate getCreateDate() {
+    public LocalDateTime getCreateDate() {
         return create_date;
     }
 
     /**
      * @param create_date sets created By
      */
-    public void setCreateDate(LocalDate create_date) {
+    public void setCreateDate(LocalDateTime create_date) {
         this.create_date = create_date;
     }
 
     /**
      * @return Update Date
      */
-    public LocalDate getUpdateDate() {
+    public LocalDateTime getUpdateDate() {
         return update_date;
     }
 
     /**
      * @param update_date sets created By
      */
-    public void setUpdateDate(LocalDate update_date) {
+    public void setUpdateDate(LocalDateTime update_date) {
         this.update_date = update_date;
     }
 

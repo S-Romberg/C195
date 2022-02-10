@@ -1,18 +1,19 @@
 package Models;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Appointment {
     int id;
     Contact contact;
-    LocalDate create_date;
+    LocalDateTime create_date;
     String created_by;
-    LocalDate updated_date;
+    LocalDateTime updated_date;
     String updated_by;
     Customer customer;
     String description;
-    LocalDate end_time;
-    LocalDate start_time;
+    LocalDateTime end_time;
+    LocalDateTime start_time;
     String location;
     String title;
     String type;
@@ -20,7 +21,7 @@ public class Appointment {
 
     public Appointment(int id,
 //                       Contact contact,
-                       LocalDate create_date, String created_by, LocalDate updated_date, String updated_by, Customer customer, String description, LocalDate end_time, LocalDate start_time, String location, String title, String type, int user_id) {
+                       LocalDateTime create_date, String created_by, LocalDateTime updated_date, String updated_by, Customer customer, String description, LocalDateTime end_time, LocalDateTime start_time, String location, String title, String type, int user_id) {
         this.id = id;
 //        this.contact = contact;
         this.create_date = create_date;
@@ -46,7 +47,7 @@ public class Appointment {
     /**
      * @return the create_date
      */
-    public LocalDate getCreateDate() {
+    public LocalDateTime getCreateDate() {
         return create_date;
     }
 
@@ -60,7 +61,7 @@ public class Appointment {
     /**
      * @return the updated_date
      */
-    public LocalDate getUpdatedDate() {
+    public LocalDateTime getUpdatedDate() {
         return updated_date;
     }
 
@@ -95,14 +96,14 @@ public class Appointment {
     /**
      * @return the start_time
      */
-    public LocalDate getStartTime() {
+    public LocalDateTime getStartTime() {
         return start_time;
     }
 
     /**
      * @return the end_time
      */
-    public LocalDate getEndTime() {
+    public LocalDateTime getEndTime() {
         return end_time;
     }
 

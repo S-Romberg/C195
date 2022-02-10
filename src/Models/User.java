@@ -1,19 +1,19 @@
 package Models;
 
 import java.text.ParseException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 
 public class User {
     public int id;
     public String user_name;
     public String password;
-    public LocalDate create_date;
+    public LocalDateTime create_date;
     public String created_by;
-    public LocalDate update_date;
+    public LocalDateTime update_date;
     public String updated_by;
 
-    public User(int id, String user_name, LocalDate create_date, String created_by, LocalDate update_date, String updated_by, String password) throws ParseException {
+    public User(int id, String user_name, LocalDateTime create_date, String created_by, LocalDateTime update_date, String updated_by, String password) throws ParseException {
         System.out.println(id + user_name + create_date + created_by + update_date + updated_by + password);
         this.id = id;
         this.user_name = user_name;
