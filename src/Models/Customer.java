@@ -19,7 +19,6 @@ public class Customer {
 //    public Appointments[] appointments;
 
     public Customer(int id, String name, String address, LocalDateTime create_date, String created_by, String division, String country, LocalDateTime update_date, String updated_by, String phone, String postal_code) {
-        System.out.println(name + address + created_by);
         this.id = id;
         this.name = name;
         this.address = address;

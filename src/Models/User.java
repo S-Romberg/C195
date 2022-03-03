@@ -14,7 +14,6 @@ public class User {
     public String updated_by;
 
     public User(int id, String user_name, LocalDateTime create_date, String created_by, LocalDateTime update_date, String updated_by, String password) throws ParseException {
-        System.out.println(id + user_name + create_date + created_by + update_date + updated_by + password);
         this.id = id;
         this.user_name = user_name;
         this.password = password;

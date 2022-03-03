@@ -16,6 +16,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -73,19 +74,36 @@ public class AppointmentController {
 
 
     public void initialize() {
+        setLocalDefault();
         Helper.connectToAndQueryDatabase();
         if (appointment_table != null) {
             getAppointments();
             appointment_table.setItems(allAppointments);
         } else if (edit_user != null){
-            UserController.getAllUsers();
-            CustomerController.getCustomers();
-            ContactController.getAllContacts();
-            edit_user.setItems(UserController.allUsers);
-            edit_customer.setItems(CustomerController.allCustomers);
-            edit_contact.setItems(ContactController.allContacts);
+            setFormValues();
         }
-        setLocalDefault();
+    }
+
+    private void setFormValues() {
+        UserController.getAllUsers();
+        CustomerController.getCustomers();
+        ContactController.getAllContacts();
+        edit_user.setItems(UserController.allUsers);
+        edit_customer.setItems(CustomerController.allCustomers);
+        edit_contact.setItems(ContactController.allContacts);
+        if (selectedAppointment != null) {
+            edit_id.setText(String.valueOf(selectedAppointment.getId()));
+            edit_location.setText(selectedAppointment.getLocationString());
+            edit_start.setText(String.valueOf(selectedAppointment.getStartTime()));
+            edit_end.setText(String.valueOf(selectedAppointment.getEndTime()));
+            edit_title.setText(selectedAppointment.getTitle());
+            edit_type.setText(selectedAppointment.getType());
+            edit_description.setText(selectedAppointment.getDescription());
+            edit_contact.setValue(selectedAppointment.getContact());
+            edit_customer.setValue(selectedAppointment.getCustomer());
+            edit_user.setValue(selectedAppointment.getUser());
+            save_button.setOnMouseClicked(e -> updateAppointment());
+        }
     }
 
     private void setLocalDefault() {
@@ -131,13 +149,15 @@ public class AppointmentController {
         try (Statement stmt = Helper.con.createStatement()) {
             rs = stmt.executeQuery(query);
             while (rs.next()) {
-                Appointment appointment = new Appointment(
+                Appointment appointment;
+                appointment = new Appointment(
                     rs.getInt("Appointment_ID"),
+                    rs.getInt("Contact_ID"),
                     rs.getTimestamp("Create_Date").toLocalDateTime(),
                     rs.getString("Created_By"),
                     rs.getTimestamp("Last_Update").toLocalDateTime(),
                     rs.getString("Last_Updated_By"),
-                    CustomerController.findCustomer(rs.getInt("Customer_ID")),
+                    rs.getInt("Customer_ID"),
                     rs.getString("Description"),
                     rs.getTimestamp("End").toLocalDateTime(),
                     rs.getTimestamp("Start").toLocalDateTime(),
@@ -154,7 +174,7 @@ public class AppointmentController {
     }
 
     public void addAppointment() throws IOException {
-        System.out.println("add appointment");
+        selectedAppointment = null;
         Parent addAppointmentPage = FXMLLoader.load(getClass().getResource("../Views/appointment_form.fxml"));
         Stage stage = new Stage();
         stage.setScene(new Scene(addAppointmentPage));
@@ -172,41 +192,37 @@ public class AppointmentController {
     }
 
     public void createAppointment() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime start;
-        LocalDateTime end;
         try {
-            end = LocalDateTime.parse(edit_end.getText(), formatter);
-            start = LocalDateTime.parse(edit_start.getText(), formatter);
-        } catch (Exception e) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime end = LocalDateTime.parse(edit_end.getText(), formatter);
+            LocalDateTime  start = LocalDateTime.parse(edit_start.getText(), formatter);
+            String location = edit_location.getText();
+            Contact contact = edit_contact.getValue();
+            Customer customer = edit_customer.getValue();
+            User user = edit_user.getValue();
+            String title = edit_title.getText();
+            String type = edit_type.getText();
+            String description = edit_description.getText();
+
+            Date current_date = new Date(System.currentTimeMillis());
+            String current_user = UserController.user.getUserName();
+            String query = String.format("INSERT into appointments " +
+                    "(Contact_ID, Create_Date, Created_By, Customer_ID, Description, End, Last_Update, Last_Updated_By, Location, Start, Title, Type, User_ID)" +
+                    " VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s);",
+                    contact.getId(), current_date, current_user, customer.getId(), description, end, current_date, current_user, location, start, title, type, user.getId());
+            try (Statement stmt = Helper.con.createStatement()) {
+                if (stmt.executeUpdate(query) == 1) {
+                    getAppointments();
+                    close();
+                } else {
+                    throwAlert("Something went wrong", "Something went wrong");
+                }
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
+            }
+        } catch (DateTimeException e) {
             throwAlert("Bad date entered", "Date must match format yyyy-MM-dd HH:mm:ss");
         }
-
-
-         String location = edit_location.getText();
-         Contact contact = edit_contact.getValue();
-         Customer customer = edit_customer.getValue();
-         User user = edit_user.getValue();
-         String title = edit_title.getText();
-         String type = edit_type.getText();
-         String description = edit_description.getText();
-
-        Date current_date = new Date(System.currentTimeMillis());
-        String current_user = UserController.user.getUserName();
-        // String.format("u1=%s;u2=%s;u3=%s;u4=%s;", u1, u2, u3, u4);
-//        String query = String.format("INSERT into customers " +
-//                "(Address, Create_Date, Created_By, Customer_Name, Division_ID, Last_Update, Last_Updated_By, Phone, Postal_Code)" +
-//                " VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');", address, current_date, current_user, name, division.getId(), current_date, current_user, phone, postal_code);
-//        try (Statement stmt = Helper.con.createStatement()) {
-//            if (stmt.executeUpdate(query) == 1) {
-//                getAppointments();
-//                close();
-//            } else {
-//                throwAlert("Something went wrong", "Something went wrong");
-//            }
-//        } catch (SQLException throwable) {
-//            throwable.printStackTrace();
-//        }
     }
 
     public void updateAppointment() {

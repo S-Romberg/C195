@@ -1,16 +1,19 @@
 package Models;
 
-import java.time.LocalDate;
+import Controllers.ContactController;
+import Controllers.CustomerController;
+import Controllers.UserController;
+
 import java.time.LocalDateTime;
 
 public class Appointment {
     int id;
-    Contact contact;
+    int contact_id;
     LocalDateTime create_date;
     String created_by;
     LocalDateTime updated_date;
     String updated_by;
-    Customer customer;
+    int customer_id;
     String description;
     LocalDateTime end_time;
     LocalDateTime start_time;
@@ -19,16 +22,14 @@ public class Appointment {
     String type;
     int user_id;
 
-    public Appointment(int id,
-//                       Contact contact,
-                       LocalDateTime create_date, String created_by, LocalDateTime updated_date, String updated_by, Customer customer, String description, LocalDateTime end_time, LocalDateTime start_time, String location, String title, String type, int user_id) {
+    public Appointment(int id, int contact_id, LocalDateTime create_date, String created_by, LocalDateTime updated_date, String updated_by, int customer_id, String description, LocalDateTime end_time, LocalDateTime start_time, String location, String title, String type, int user_id) {
         this.id = id;
-//        this.contact = contact;
+        this.contact_id = contact_id;
         this.create_date = create_date;
         this.created_by = created_by;
         this.updated_date = updated_date;
         this.updated_by = updated_by;
-        this.customer = customer;
+        this.customer_id = customer_id;
         this.description = description;
         this.end_time = end_time;
         this.start_time = start_time;
@@ -37,6 +38,7 @@ public class Appointment {
         this.type = type;
         this.user_id = user_id;
     }
+
     /**
      * @return the id
      */
@@ -83,14 +85,29 @@ public class Appointment {
      * @return the customer
      */
     public Customer getCustomer() {
-        return customer;
+        return CustomerController.findCustomer(customer_id);
+
     }
 
     /**
-     * @return the customer
+     * @return the customer name
      */
     public String getCustomerName() {
-        return customer.getName();
+        return getCustomer().getName();
+    }
+
+    /**
+     * @return the contact
+     */
+    public Contact getContact() {
+        return ContactController.findContact(contact_id);
+    }
+
+    /**
+     * @return the contact name
+     */
+    public String getContactName() {
+        return getContact().getName();
     }
 
     /**
@@ -133,6 +150,13 @@ public class Appointment {
      */
     public int getUserId() {
         return user_id;
+    }
+
+    /**
+     * @return the user
+     */
+    public User getUser() {
+        return UserController.getUser(user_id);
     }
 
 }

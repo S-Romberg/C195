@@ -1,6 +1,7 @@
 package Controllers;
 
 import Models.Appointment;
+import Models.Division;
 import Models.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -89,10 +90,11 @@ public class UserController {
     }
 
     public static void getAllUsers() {
+        allUsers.clear();
         String query = "SELECT * FROM users;";
         try (Statement stmt = Helper.con.createStatement()) {
             ResultSet rs = stmt.executeQuery(query);
-            if (rs.next()) {
+            while (rs.next()) {
                 user = new User(
                         rs.getInt("User_Id"),
                         rs.getString("User_Name"),
@@ -107,6 +109,17 @@ public class UserController {
             throwables.printStackTrace();
         }
     }
+
+    public static User getUser(int id) {
+        User match = null;
+        for (User d : allUsers) {
+            if (d.getId() == (id)) {
+                match = d;
+            }
+        };
+        return match;
+    }
+
 
     public static ObservableList<String> getAllUserNames() {
         ObservableList<String> allUserNames = FXCollections.observableArrayList();
