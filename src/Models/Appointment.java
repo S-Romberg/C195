@@ -4,7 +4,12 @@ import Controllers.ContactController;
 import Controllers.CustomerController;
 import Controllers.UserController;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class Appointment {
     int id;
@@ -22,7 +27,7 @@ public class Appointment {
     String type;
     int user_id;
 
-    public Appointment(int id, int contact_id, LocalDateTime create_date, String created_by, LocalDateTime updated_date, String updated_by, int customer_id, String description, LocalDateTime end_time, LocalDateTime start_time, String location, String title, String type, int user_id) {
+    public Appointment(int id, int contact_id, LocalDateTime create_date, String created_by, LocalDateTime updated_date, String updated_by, int customer_id, String description, LocalDateTime end_time, LocalDateTime start_time, String location, String title, String type, int user_id) throws ParseException {
         this.id = id;
         this.contact_id = contact_id;
         this.create_date = create_date;

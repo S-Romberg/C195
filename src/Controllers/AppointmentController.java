@@ -16,6 +16,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
@@ -168,7 +169,7 @@ public class AppointmentController {
                 );
                 allAppointments.add(appointment);
             }
-        } catch (SQLException throwables) {
+        } catch (SQLException | ParseException throwables) {
             throwables.printStackTrace();
         }
     }
@@ -226,26 +227,32 @@ public class AppointmentController {
     }
 
     public void updateAppointment() {
-//        int id = Integer.parseInt(edit_id.getText());
-//        String address = edit_address.getText();
-//        String name = edit_name.getText();
-//        Division division = findDivision(edit_division.getValue());
-//        String postal_code = edit_postal_code.getText();
-//        String phone = edit_phone.getText();
-//        String query = String.format(
-//                "UPDATE customers SET Address = '%s', Customer_Name = '%s', Division_ID = '%s', Phone = '%s', Postal_Code = '%s', Last_Update = '%s'," +
-//                        " Last_Updated_By = '%s' WHERE Customer_ID = '%s';",
-//                address, name, division.getId(), phone, postal_code, new Date(System.currentTimeMillis()), UserController.user.getUserName(), id);
-//        try (Statement stmt = Helper.con.createStatement()) {
-//            if (stmt.executeUpdate(query) == 1) {
-//                getAppointments();
-//                close();
-//            } else {
-//                throwAlert("Something went wrong", "Something went wrong");
-//            }
-//        } catch (SQLException throwable) {
-//            throwable.printStackTrace();
-//        }
+        int id = Integer.parseInt(edit_id.getText());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime end = LocalDateTime.parse(edit_end.getText(), formatter);
+        LocalDateTime  start = LocalDateTime.parse(edit_start.getText(), formatter);
+        String location = edit_location.getText();
+        Contact contact = edit_contact.getValue();
+        Customer customer = edit_customer.getValue();
+        User user = edit_user.getValue();
+        String title = edit_title.getText();
+        String type = edit_type.getText();
+        String description = edit_description.getText();
+        Date current_date = new Date(System.currentTimeMillis());
+        String current_user = UserController.user.getUserName();
+        String query = String.format("UPDATE appointments SET Contact_ID = '%s', Customer_ID = '%s', Description = '%s', End = '%s'," +
+                        "Last_Updated = '%s', Last_U®pdated_By = '%s', Location = '%s', Start = '%s', Title = '%s', Type = '%s', User_ID = '%s' WHERE Appointment_ID = '%s';",
+                contact.getId(), customer.getId(), description, end, current_date, current_user, location, start, title, type, user.getId(), id);
+        try (Statement stmt = Helper.con.createStatement()) {
+            if (stmt.executeUpdate(query) == 1) {
+                getAppointments();
+                close();
+            } else {
+                throwAlert("Something went wrong", "Something went wrong");
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
     }
 
     public void deleteAppointment(MouseEvent mouseEvent) {

@@ -1,6 +1,11 @@
 package Controllers;
 import javafx.scene.control.Alert;
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 //2.  Write code that provides the following customer record functionalities:
 //
@@ -142,6 +147,10 @@ import java.sql.*;
 //F.  Demonstrate professional communication in the content and presentation of your submission.
 public class Helper {
     public static Connection con;
+    public static DateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    public static DateFormat estFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    public static DateFormat localFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
 
     public static void connectToAndQueryDatabase() {
         try {
@@ -159,6 +168,14 @@ public class Helper {
         alert.setHeaderText("Error");
         alert.setContentText(detail);
         alert.showAndWait();
+    }
+
+    public static void initializeTimeZones() throws ParseException {
+        utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date date = utcFormat.parse("2012-08-15T22:56:02.038Z");
+        estFormat.setTimeZone(TimeZone.getTimeZone("EST"));
+        localFormat.setTimeZone(TimeZone.getDefault());
+        System.out.println(estFormat.format(date));
     }
 
 }
