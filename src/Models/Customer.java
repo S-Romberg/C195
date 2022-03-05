@@ -49,6 +49,7 @@ public class Customer {
      *  queries the DB for all appointments with the customers Customer_ID
      */
     public void getCustomerAppointments() {
+        this.appointments.clear();
         String query = String.format("select * from appointments where Customer_ID = %s", id);
         try (Statement stmt = Helper.con.createStatement()) {
             ResultSet rs = stmt.executeQuery(query);

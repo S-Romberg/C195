@@ -158,6 +158,12 @@ public class AppointmentController {
         }
     }
 
+    static void refreshAppointmentData() {
+        for(Customer customer : CustomerController.allCustomers) {
+            customer.getCustomerAppointments();
+        }
+    }
+
     public void createAppointment() {
         try {
             LocalDateTime end = Helper.localTimeToUtc(LocalDateTime.parse(edit_end.getText(), Helper.formatter));
@@ -183,6 +189,7 @@ public class AppointmentController {
                     contact.getId(), current_date, current_user, customer.getId(), description, end, current_date, current_user, location, start, title, type, user.getId());
             try (Statement stmt = Helper.con.createStatement()) {
                 if (stmt.executeUpdate(query) == 1) {
+                    refreshAppointmentData();
                     getAppointments();
                     close();
                 } else {
@@ -221,6 +228,7 @@ public class AppointmentController {
                     contact.getId(), customer.getId(), description, end, current_date, current_user, location, start, title, type, user.getId(), id);
             try (Statement stmt = Helper.con.createStatement()) {
                 if (stmt.executeUpdate(query) == 1) {
+                    refreshAppointmentData();
                     getAppointments();
                     close();
                 } else {
@@ -243,6 +251,7 @@ public class AppointmentController {
         try (Statement stmt = Helper.con.createStatement()) {
             if (stmt.executeUpdate(query) == 1) {
                 throwAlert(text.getString("deleted_appointment"), text.getString("deleted_appointment") + " #" + appointment.getId() + " - " + appointment.getType(), "");
+                refreshAppointmentData();
                 getAppointments();
             } else {
                 throwAlert(text.getString("generic_error"), text.getString("generic_error"), "");
