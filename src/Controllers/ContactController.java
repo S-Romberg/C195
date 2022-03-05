@@ -32,14 +32,9 @@ public class ContactController {
 
     public static Contact findContact(int id) {
         Contact match = null;
-        System.out.println("findContact");
 
         for (Contact c : allContacts) {
-            System.out.println("inside for findContact");
-            System.out.println(c);
             if (c.getId() == id) {
-                System.out.println("inside if findContact");
-                System.out.println(c);
                 match = c;
             }
         };

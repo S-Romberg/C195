@@ -2,12 +2,17 @@ package Models;
 
 import Controllers.ContactController;
 import Controllers.CustomerController;
+import Controllers.Helper;
 import Controllers.UserController;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -52,11 +57,19 @@ public class Appointment {
     }
 
     /**
-     * @return the create_date
+     * @return the create_date in UTC
      */
-    public LocalDateTime getCreateDate() {
+    public LocalDateTime getCreateDateUtc() {
         return create_date;
     }
+
+    /**
+     * @return the updated_date in local time
+     */
+    public LocalDateTime getCreateDate() {
+        return toUTC(create_date).withZoneSameInstant(Helper.localTime).toLocalDateTime();
+    }
+
 
     /**
      * @return the created_by
@@ -66,10 +79,17 @@ public class Appointment {
     }
 
     /**
-     * @return the updated_date
+     * @return the updated_date in UTC
+     */
+    public LocalDateTime getUpdatedDateUtc() {
+        return updated_date;
+    }
+
+    /**
+     * @return the updated_date in local time
      */
     public LocalDateTime getUpdatedDate() {
-        return updated_date;
+        return toUTC(updated_date).withZoneSameInstant(Helper.localTime).toLocalDateTime();
     }
 
     /**
@@ -91,7 +111,6 @@ public class Appointment {
      */
     public Customer getCustomer() {
         return CustomerController.findCustomer(customer_id);
-
     }
 
     /**
@@ -116,20 +135,48 @@ public class Appointment {
     }
 
     /**
-     * @return the start_time
+     * @return the start_time in local time
      */
     public LocalDateTime getStartTime() {
+        return toUTC(start_time).withZoneSameInstant(Helper.localTime).toLocalDateTime();
+    }
+
+    /**
+     * @return the start_time in utc
+     */
+    public LocalDateTime getStartTimeUtc() {
         return start_time;
     }
 
     /**
-     * @return the end_time
+     * @return the start_time in est time
+     */
+    public LocalDateTime getStartTimeEst() {
+        return toUTC(start_time).withZoneSameInstant(Helper.estTime).toLocalDateTime();
+    }
+
+    /**
+     * @return the end_time in local time
      */
     public LocalDateTime getEndTime() {
+        return toUTC(end_time).withZoneSameInstant(Helper.localTime).toLocalDateTime();
+    }
+
+    /**
+     * @return the end_time in UTC
+     */
+    public LocalDateTime getEndTimeUtc() {
         return end_time;
     }
 
-     /**
+    /**
+     * @return the end_time in est time
+     */
+    public LocalDateTime getEndTimeEst() {
+        return toUTC(end_time).withZoneSameInstant(Helper.estTime).toLocalDateTime();
+    }
+
+    /**
      * @return the location
      */
     public String getLocationString() {
@@ -162,6 +209,10 @@ public class Appointment {
      */
     public User getUser() {
         return UserController.getUser(user_id);
+    }
+
+    private ZonedDateTime toUTC(LocalDateTime time) {
+        return ZonedDateTime.of(time, ZoneOffset.UTC );
     }
 
 }

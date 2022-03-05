@@ -3,6 +3,7 @@ package Controllers;
 import Models.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,14 +20,19 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 
 import static Controllers.Helper.throwAlert;
 
 public class AppointmentController {
+    @FXML private RadioButton all;
+    @FXML private RadioButton monthly;
+    @FXML private RadioButton weekly;
     @FXML private TextField edit_location;
     @FXML private ChoiceBox<Contact> edit_contact;
     @FXML private ChoiceBox<Customer> edit_customer;
@@ -69,6 +75,9 @@ public class AppointmentController {
     @FXML private Button cancel_button;
 
     public static ObservableList<Appointment> allAppointments = FXCollections.observableArrayList();
+    public static FilteredList<Appointment> filteredAppointments = new FilteredList<>(allAppointments);
+
+    LocalDateTime currentDate = ZonedDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).withZoneSameInstant(Helper.localTime).toLocalDateTime();
     private static Appointment selectedAppointment;
     ResourceBundle text;
     ResultSet rs;
@@ -79,7 +88,7 @@ public class AppointmentController {
         Helper.connectToAndQueryDatabase();
         if (appointment_table != null) {
             getAppointments();
-            appointment_table.setItems(allAppointments);
+            appointment_table.setItems(filteredAppointments);
         } else if (edit_user != null){
             setFormValues();
         }
@@ -95,8 +104,8 @@ public class AppointmentController {
         if (selectedAppointment != null) {
             edit_id.setText(String.valueOf(selectedAppointment.getId()));
             edit_location.setText(selectedAppointment.getLocationString());
-            edit_start.setText(String.valueOf(selectedAppointment.getStartTime()));
-            edit_end.setText(String.valueOf(selectedAppointment.getEndTime()));
+            edit_start.setText(String.valueOf(selectedAppointment.getStartTime().format(Helper.formatter)));
+            edit_end.setText(String.valueOf(selectedAppointment.getEndTime().format(Helper.formatter)));
             edit_title.setText(selectedAppointment.getTitle());
             edit_type.setText(selectedAppointment.getType());
             edit_description.setText(selectedAppointment.getDescription());
@@ -174,29 +183,12 @@ public class AppointmentController {
         }
     }
 
-    public void addAppointment() throws IOException {
-        selectedAppointment = null;
-        Parent addAppointmentPage = FXMLLoader.load(getClass().getResource("../Views/appointment_form.fxml"));
-        Stage stage = new Stage();
-        stage.setScene(new Scene(addAppointmentPage));
-        stage.show();
-    }
-
-    public void modifyAppointment() throws IOException {
-        Appointment appointment = appointment_table.getSelectionModel().getSelectedItem();
-        setSelectedAppointment(appointment);
-        if (customer == null) { throwAlert("Error: No selected appointment", "Must select appointment to modify"); return; }
-        Parent addAppointmentPage = FXMLLoader.load(getClass().getResource("../Views/appointment_form.fxml"));
-        Stage stage = new Stage();
-        stage.setScene(new Scene(addAppointmentPage));
-        stage.show();
-    }
-
     public void createAppointment() {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            LocalDateTime end = LocalDateTime.parse(edit_end.getText(), formatter);
-            LocalDateTime  start = LocalDateTime.parse(edit_start.getText(), formatter);
+            LocalDateTime end = Helper.localTimeToUtc(LocalDateTime.parse(edit_end.getText(), Helper.formatter));
+            LocalDateTime start = Helper.localTimeToUtc(LocalDateTime.parse(edit_start.getText(), Helper.formatter));
+            withinBusinessHours(end);
+            withinBusinessHours(start);
             String location = edit_location.getText();
             Contact contact = edit_contact.getValue();
             Customer customer = edit_customer.getValue();
@@ -226,32 +218,36 @@ public class AppointmentController {
         }
     }
 
+
     public void updateAppointment() {
-        int id = Integer.parseInt(edit_id.getText());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime end = LocalDateTime.parse(edit_end.getText(), formatter);
-        LocalDateTime  start = LocalDateTime.parse(edit_start.getText(), formatter);
-        String location = edit_location.getText();
-        Contact contact = edit_contact.getValue();
-        Customer customer = edit_customer.getValue();
-        User user = edit_user.getValue();
-        String title = edit_title.getText();
-        String type = edit_type.getText();
-        String description = edit_description.getText();
-        Date current_date = new Date(System.currentTimeMillis());
-        String current_user = UserController.user.getUserName();
-        String query = String.format("UPDATE appointments SET Contact_ID = '%s', Customer_ID = '%s', Description = '%s', End = '%s'," +
-                        "Last_Updated = '%s', Last_U®pdated_By = '%s', Location = '%s', Start = '%s', Title = '%s', Type = '%s', User_ID = '%s' WHERE Appointment_ID = '%s';",
-                contact.getId(), customer.getId(), description, end, current_date, current_user, location, start, title, type, user.getId(), id);
-        try (Statement stmt = Helper.con.createStatement()) {
-            if (stmt.executeUpdate(query) == 1) {
-                getAppointments();
-                close();
-            } else {
-                throwAlert("Something went wrong", "Something went wrong");
+        try {
+            int id = Integer.parseInt(edit_id.getText());
+            LocalDateTime end = Helper.localTimeToUtc(LocalDateTime.parse(edit_end.getText(), Helper.formatter));
+            LocalDateTime start = Helper.localTimeToUtc(LocalDateTime.parse(edit_start.getText(), Helper.formatter));
+            String location = edit_location.getText();
+            Contact contact = edit_contact.getValue();
+            Customer customer = edit_customer.getValue();
+            User user = edit_user.getValue();
+            String title = edit_title.getText();
+            String type = edit_type.getText();
+            String description = edit_description.getText();
+            Date current_date = new Date(System.currentTimeMillis());
+            String current_user = UserController.user.getUserName();
+            String query = String.format("UPDATE appointments SET Contact_ID = '%s', Customer_ID = '%s', Description = '%s', End = '%s'," +
+                            "Last_Update = '%s', Last_Updated_By = '%s', Location = '%s', Start = '%s', Title = '%s', Type = '%s', User_ID = '%s' WHERE Appointment_ID = '%s';",
+                    contact.getId(), customer.getId(), description, end, current_date, current_user, location, start, title, type, user.getId(), id);
+            try (Statement stmt = Helper.con.createStatement()) {
+                if (stmt.executeUpdate(query) == 1) {
+                    getAppointments();
+                    close();
+                } else {
+                    throwAlert("Something went wrong", "Something went wrong");
+                }
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
             }
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
+        } catch (DateTimeException e) {
+            throwAlert("Bad date entered", "Date must match format yyyy-MM-dd HH:mm:ss");
         }
     }
 
@@ -273,10 +269,41 @@ public class AppointmentController {
     }
 
     /**
+     * @param time a time that should be within business hours in EST
+     */
+    private void withinBusinessHours(LocalDateTime time) {
+        System.out.println("time" + time);
+    }
+
+    /**
      * @param appointment the selected appointment in appointment table
      */
     public static void setSelectedAppointment(Appointment appointment){
         selectedAppointment = appointment;
+    }
+
+    /**
+     *  set filter on appointments table to all appointments
+     */
+    public void allAppointments(){
+        filteredAppointments.setPredicate(s -> true);
+    }
+
+    /**
+     *  set filter on appointments table to monthly appointments
+     */
+    public void monthlyAppointments(){
+        System.out.println("CURRENT: " + currentDate);
+        Predicate<Appointment> filterAppointments = e -> e.getStartTime().isAfter(currentDate) && e.getStartTime().isBefore(currentDate.plus(1, ChronoUnit.MONTHS));
+        filteredAppointments.setPredicate(filterAppointments);
+    }
+
+    /**
+     *  set filter on appointments table to weekly appointments
+     */
+    public void weeklyAppointments(){
+        Predicate<Appointment> filterAppointments = e -> e.getStartTime().isAfter(currentDate) && e.getStartTime().isBefore(currentDate.plus(1, ChronoUnit.WEEKS));
+        filteredAppointments.setPredicate(filterAppointments);
     }
 
     /**
@@ -291,6 +318,26 @@ public class AppointmentController {
         }
         stage.close();
     }
+
+
+    public void addAppointment() throws IOException {
+        selectedAppointment = null;
+        Parent addAppointmentPage = FXMLLoader.load(getClass().getResource("../Views/appointment_form.fxml"));
+        Stage stage = new Stage();
+        stage.setScene(new Scene(addAppointmentPage));
+        stage.show();
+    }
+
+    public void modifyAppointment() throws IOException {
+        Appointment appointment = appointment_table.getSelectionModel().getSelectedItem();
+        setSelectedAppointment(appointment);
+        if (customer == null) { throwAlert("Error: No selected appointment", "Must select appointment to modify"); return; }
+        Parent addAppointmentPage = FXMLLoader.load(getClass().getResource("../Views/appointment_form.fxml"));
+        Stage stage = new Stage();
+        stage.setScene(new Scene(addAppointmentPage));
+        stage.show();
+    }
+
 }
 
 
