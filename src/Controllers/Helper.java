@@ -12,34 +12,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.TimeZone;
 
-//2.  Write code that provides the following customer record functionalities:
-
-//-  When deleting a customer record, all of the customer’s appointments must be deleted first, due to foreign key constraints.
-//
-//•  When a customer record is deleted, a custom message should display in the user interface.
-//
-//•  A custom message is displayed in the user interface with the Appointment_ID and type of appointment canceled.
-//
-//c.  Write code that enables the user to adjust appointment times. While the appointment times should be stored in Coordinated Universal Time (UTC), they should be automatically and consistently updated according to the local time zone set on the user’s computer wherever appointments are displayed in the application.
-//
-//
-//d.  Write code to implement input validation and logical error checks to prevent each of the following changes when adding or updating information; display a custom message specific for each error check in the user interface:
-//
-//•  scheduling an appointment outside of business hours defined as 8:00 a.m. to 10:00 p.m. EST, including weekends
-//
-//•  scheduling overlapping appointments for customers
-//
-//•  entering an incorrect username and password
-//
+//• Error for:  scheduling overlapping appointments for customers
 //
 //e.  Write code to provide an alert when there is an appointment within 15 minutes of the user’s log-in. A custom message should be displayed in the user interface and include the appointment ID, date, and time. If the user does not have any appointments within 15 minutes of logging in, display a custom message in the user interface indicating there are no upcoming appointments.
-//
-//
 //Note: Since evaluation may be testing your application outside of business hours, your alerts must be robust enough to trigger an appointment within 15 minutes of the local time set on the user’s computer, which may or may not be EST.
 //
-//
 //f.  Write code that generates accurate information in each of the following reports and will display the reports in the user interface:
-//
 //
 //Note: You do not need to save and print the reports to a file or provide a screenshot.
 //
@@ -87,10 +65,10 @@ public class Helper {
             throwables.printStackTrace();
         }
     }
-    public static void throwAlert(String mainText, String detail) {
+    public static void throwAlert(String mainText, String detail, String header) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(mainText);
-        alert.setHeaderText("Error");
+        alert.setHeaderText(header);
         alert.setContentText(detail);
         alert.showAndWait();
     }

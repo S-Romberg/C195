@@ -1,5 +1,6 @@
 package Controllers;
 
+import Models.Appointment;
 import Models.Customer;
 import Models.Division;
 import javafx.collections.FXCollections;
@@ -15,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Date;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -133,8 +135,8 @@ public class CustomerController {
                 );
                 addCustomer(customer);
             }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
     }
 
@@ -197,29 +199,6 @@ public class CustomerController {
         }
     }
 
-    /**
-     * creates add customer scene
-     */
-    public void addCustomer() throws Exception {
-        setSelectedCustomer(null);
-        Parent addCustomerPage = FXMLLoader.load(getClass().getResource("../Views/customer_form.fxml"));
-        Stage stage = new Stage();
-        stage.setScene(new Scene(addCustomerPage));
-        stage.show();
-    }
-
-    /**
-     * creates modify customer scene, sets selectedCustomer to customer selected on table
-     */
-    public void modifyCustomer() throws Exception {
-        Customer customer = customer_table.getSelectionModel().getSelectedItem();
-        setSelectedCustomer(customer);
-        if (customer == null) { throwAlert("Error: No selected customer", "Must select customer to modify"); return; }
-        Parent addCustomerPage = FXMLLoader.load(getClass().getResource("../Views/customer_form.fxml"));
-        Stage stage = new Stage();
-        stage.setScene(new Scene(addCustomerPage));
-        stage.show();
-    }
 
     public void createCustomer() {
         String address = edit_address.getText();
@@ -229,7 +208,6 @@ public class CustomerController {
         String phone = edit_phone.getText();
         Date current_date = new Date(System.currentTimeMillis());
         String current_user = UserController.user.getUserName();
-        // String.format("u1=%s;u2=%s;u3=%s;u4=%s;", u1, u2, u3, u4);
         String query = String.format("INSERT into customers " +
                 "(Address, Create_Date, Created_By, Customer_Name, Division_ID, Last_Update, Last_Updated_By, Phone, Postal_Code)" +
                 " VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');", address, current_date, current_user, name, division.getId(), current_date, current_user, phone, postal_code);
@@ -238,7 +216,7 @@ public class CustomerController {
                 getCustomers();
                 close();
             } else {
-                throwAlert("Something went wrong", "Something went wrong");
+                throwAlert(text.getString("generic_error"), text.getString("generic_error"),"");
             }
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -261,7 +239,7 @@ public class CustomerController {
                 getCustomers();
                 close();
             } else {
-                throwAlert("Something went wrong", "Something went wrong");
+                throwAlert(text.getString("generic_error"), text.getString("generic_error"), "");
             }
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -271,14 +249,19 @@ public class CustomerController {
     public void deleteCustomer() {
         Customer customer = customer_table.getSelectionModel().getSelectedItem();
         setSelectedCustomer(customer);
-        if (customer == null) { throwAlert("Error: No selected customer", "Must select customer to delete"); return; }
+        if (customer == null) { throwAlert("Error: No selected customer", "Must select customer to delete", ""); return; }
         int id = selectedCustomer.getId();
-        String query = String.format("DELETE from customers WHERE Customer_ID = '%s';", id);
+        String deleteAppointments = String.format("DELETE from Appointments WHERE Customer_ID = '%s';", id);
+        String deleteCustomer = String.format("DELETE from customers WHERE Customer_ID = '%s';", id);
         try (Statement stmt = Helper.con.createStatement()) {
-            if (stmt.executeUpdate(query) == 1) {
+            if (stmt.executeUpdate(deleteAppointments) == 1) {
+                AppointmentController.getAppointments();
+            }
+            if (stmt.executeUpdate(deleteCustomer) == 1) {
+                throwAlert(text.getString("deleted_customer"), text.getString("deleted_customer") + " #" + customer.getId() + " - " + customer.getName(), "");
                 getCustomers();
             } else {
-                throwAlert("Something went wrong", "Something went wrong");
+                throwAlert(text.getString("generic_error"), text.getString("generic_error"), "");
             }
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -292,12 +275,42 @@ public class CustomerController {
         selectedCustomer = customer;
     }
 
+    /**
+     * @param newCustomer a customer to be added to the allCustomers array
+     */
     private static void addCustomer(Customer newCustomer){
         allCustomers.add(newCustomer);
     }
 
+    /**
+     * @param newCountry a country to be added to the allCountries array
+     */
     private static void addCountry(String newCountry){
         allCountries.add(newCountry);
+    }
+
+    /**
+     * creates add customer scene
+     */
+    public void addCustomer() throws Exception {
+        setSelectedCustomer(null);
+        Parent addCustomerPage = FXMLLoader.load(getClass().getResource("../Views/customer_form.fxml"));
+        Stage stage = new Stage();
+        stage.setScene(new Scene(addCustomerPage));
+        stage.show();
+    }
+
+    /**
+     * creates modify customer scene, sets selectedCustomer to customer selected on table
+     */
+    public void modifyCustomer() throws Exception {
+        Customer customer = customer_table.getSelectionModel().getSelectedItem();
+        setSelectedCustomer(customer);
+        if (customer == null) { throwAlert("Error: No selected customer", "Must select customer to modify", ""); return; }
+        Parent addCustomerPage = FXMLLoader.load(getClass().getResource("../Views/customer_form.fxml"));
+        Stage stage = new Stage();
+        stage.setScene(new Scene(addCustomerPage));
+        stage.show();
     }
 
     /**

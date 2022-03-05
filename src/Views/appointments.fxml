@@ -18,16 +18,6 @@
                     <PropertyValueFactory property="id" />
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn fx:id="create_date" prefWidth="84.0">
-                <cellValueFactory>
-                    <PropertyValueFactory property="CreateDate" />
-                </cellValueFactory>
-            </TableColumn>
-            <TableColumn fx:id="created_by" prefWidth="84.0">
-                <cellValueFactory>
-                    <PropertyValueFactory property="CreatedBy" />
-                </cellValueFactory>
-            </TableColumn>
             <TableColumn fx:id="customer" prefWidth="84.0">
             <cellValueFactory>
                 <PropertyValueFactory property="CustomerName" />
@@ -38,14 +28,14 @@
                     <PropertyValueFactory property="description" />
                 </cellValueFactory>
             </TableColumn>
-            <TableColumn fx:id="end_time" prefWidth="84.0">
-                <cellValueFactory>
-                    <PropertyValueFactory property="EndTime" />
-                </cellValueFactory>
-            </TableColumn>
             <TableColumn fx:id="start_time" prefWidth="84.0">
                 <cellValueFactory>
                     <PropertyValueFactory property="StartTime" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="end_time" prefWidth="84.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="EndTime" />
                 </cellValueFactory>
             </TableColumn>
             <TableColumn fx:id="location_string" prefWidth="84.0">
@@ -66,6 +56,16 @@
             <TableColumn fx:id="user_id" prefWidth="84.0">
                 <cellValueFactory>
                     <PropertyValueFactory property="UserId" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="create_date" prefWidth="84.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="CreateDate" />
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="created_by" prefWidth="84.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="CreatedBy" />
                 </cellValueFactory>
             </TableColumn>
             <TableColumn fx:id="last_update" prefWidth="84.0">

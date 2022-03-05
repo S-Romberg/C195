@@ -211,8 +211,7 @@ public class Appointment {
         return UserController.getUser(user_id);
     }
 
-    private ZonedDateTime toUTC(LocalDateTime time) {
+    public static ZonedDateTime toUTC(LocalDateTime time) {
         return ZonedDateTime.of(time, ZoneOffset.UTC );
     }
-
 }

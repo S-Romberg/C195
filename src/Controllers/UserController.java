@@ -69,7 +69,7 @@ public class UserController {
                         rs.getString("Last_Updated_By"),
                         rs.getString("Password"));
             } else {
-                Helper.throwAlert(text.getString("login_error_1"), text.getString("login_error_2"));
+                Helper.throwAlert(text.getString("login_error_1"), text.getString("login_error_2"), "");
             }
 
         } catch (SQLException | ParseException throwables) {
@@ -96,13 +96,13 @@ public class UserController {
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 user = new User(
-                        rs.getInt("User_Id"),
-                        rs.getString("User_Name"),
-                        rs.getTimestamp("Create_Date").toLocalDateTime(),
-                        rs.getString("Created_By"),
-                        rs.getTimestamp("Last_Update").toLocalDateTime(),
-                        rs.getString("Last_Updated_By"),
-                        rs.getString("Password"));
+                    rs.getInt("User_Id"),
+                    rs.getString("User_Name"),
+                    rs.getTimestamp("Create_Date").toLocalDateTime(),
+                    rs.getString("Created_By"),
+                    rs.getTimestamp("Last_Update").toLocalDateTime(),
+                    rs.getString("Last_Updated_By"),
+                    rs.getString("Password"));
                 allUsers.add(user);
             }
         } catch (SQLException | ParseException throwables) {

@@ -18,10 +18,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.time.DateTimeException;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -78,9 +75,12 @@ public class AppointmentController {
     public static FilteredList<Appointment> filteredAppointments = new FilteredList<>(allAppointments);
 
     LocalDateTime currentDate = ZonedDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).withZoneSameInstant(Helper.localTime).toLocalDateTime();
-    private static Appointment selectedAppointment;
-    ResourceBundle text;
-    ResultSet rs;
+    Locale currentLocale = Locale.getDefault();
+    ResourceBundle text =  ResourceBundle.getBundle("TextBundle", currentLocale);
+    LocalTime eightAm = LocalTime.of(8, 0);
+    LocalTime tenPm = LocalTime.of(22, 0);
+    static Appointment selectedAppointment;
+    static ResultSet rs;
 
 
     public void initialize() {
@@ -117,8 +117,6 @@ public class AppointmentController {
     }
 
     private void setLocalDefault() {
-        Locale currentLocale = Locale.getDefault();
-        text = ResourceBundle.getBundle("TextBundle", currentLocale);
         if(appointment_table != null) {
             id.setText(text.getString("id"));
             create_date.setText(text.getString("create_date"));
@@ -153,33 +151,10 @@ public class AppointmentController {
         }
     }
 
-    private void getAppointments() {
+    static void getAppointments() {
         allAppointments.clear();
-        String query = "select * from appointments";
-        try (Statement stmt = Helper.con.createStatement()) {
-            rs = stmt.executeQuery(query);
-            while (rs.next()) {
-                Appointment appointment;
-                appointment = new Appointment(
-                    rs.getInt("Appointment_ID"),
-                    rs.getInt("Contact_ID"),
-                    rs.getTimestamp("Create_Date").toLocalDateTime(),
-                    rs.getString("Created_By"),
-                    rs.getTimestamp("Last_Update").toLocalDateTime(),
-                    rs.getString("Last_Updated_By"),
-                    rs.getInt("Customer_ID"),
-                    rs.getString("Description"),
-                    rs.getTimestamp("End").toLocalDateTime(),
-                    rs.getTimestamp("Start").toLocalDateTime(),
-                    rs.getString("Location"),
-                    rs.getString("Title"),
-                    rs.getString("Type"),
-                    rs.getInt("User_Id")
-                );
-                allAppointments.add(appointment);
-            }
-        } catch (SQLException | ParseException throwables) {
-            throwables.printStackTrace();
+        for(Customer customer : CustomerController.allCustomers) {
+            allAppointments.addAll(customer.getAppointments());
         }
     }
 
@@ -187,8 +162,11 @@ public class AppointmentController {
         try {
             LocalDateTime end = Helper.localTimeToUtc(LocalDateTime.parse(edit_end.getText(), Helper.formatter));
             LocalDateTime start = Helper.localTimeToUtc(LocalDateTime.parse(edit_start.getText(), Helper.formatter));
-            withinBusinessHours(end);
-            withinBusinessHours(start);
+            if(outsideBusinessHours(end) && outsideBusinessHours(start)) {
+                System.out.print("OUTSIDE BUSINESS HOURS");
+                throwAlert(text.getString("outside_business_hours"), text.getString("outside_business_hours") + " " + eightAm + " - " + tenPm + "EST", "");
+                return;
+            }
             String location = edit_location.getText();
             Contact contact = edit_contact.getValue();
             Customer customer = edit_customer.getValue();
@@ -208,13 +186,13 @@ public class AppointmentController {
                     getAppointments();
                     close();
                 } else {
-                    throwAlert("Something went wrong", "Something went wrong");
+                    throwAlert(text.getString("generic_error"), text.getString("generic_error"), "");
                 }
             } catch (SQLException throwable) {
                 throwable.printStackTrace();
             }
         } catch (DateTimeException e) {
-            throwAlert("Bad date entered", "Date must match format yyyy-MM-dd HH:mm:ss");
+            throwAlert("Bad date entered", "Date must match format yyyy-MM-dd HH:mm", "");
         }
     }
 
@@ -224,6 +202,11 @@ public class AppointmentController {
             int id = Integer.parseInt(edit_id.getText());
             LocalDateTime end = Helper.localTimeToUtc(LocalDateTime.parse(edit_end.getText(), Helper.formatter));
             LocalDateTime start = Helper.localTimeToUtc(LocalDateTime.parse(edit_start.getText(), Helper.formatter));
+            if(outsideBusinessHours(end) && outsideBusinessHours(start)) {
+                System.out.println("OUTSIDE BUSINESS HOURS");
+                throwAlert(text.getString("outside_business_hours"), text.getString("outside_business_hours") + " " + eightAm + " - " + tenPm + "EST", "");
+                return;
+            }
             String location = edit_location.getText();
             Contact contact = edit_contact.getValue();
             Customer customer = edit_customer.getValue();
@@ -241,27 +224,29 @@ public class AppointmentController {
                     getAppointments();
                     close();
                 } else {
-                    throwAlert("Something went wrong", "Something went wrong");
+                    throwAlert(text.getString("generic_error"), text.getString("generic_error"), "");
                 }
             } catch (SQLException throwable) {
                 throwable.printStackTrace();
             }
         } catch (DateTimeException e) {
-            throwAlert("Bad date entered", "Date must match format yyyy-MM-dd HH:mm:ss");
+            throwAlert("Bad date entered", "Date must match format yyyy-MM-dd HH:mm:ss", "");
         }
     }
 
     public void deleteAppointment(MouseEvent mouseEvent) {
         Appointment appointment = appointment_table.getSelectionModel().getSelectedItem();
         setSelectedAppointment(appointment);
-        if (customer == null) { throwAlert("Error: No selected appointment", "Must select appointment to delete"); return; }
+        if (customer == null) { throwAlert("Error: No selected appointment", "Must select appointment to delete", ""); return; }
         int id = selectedAppointment.getId();
         String query = String.format("DELETE from appointments WHERE Appointment_ID = '%s';", id);
         try (Statement stmt = Helper.con.createStatement()) {
             if (stmt.executeUpdate(query) == 1) {
+                throwAlert(text.getString("deleted_appointment"), text.getString("deleted_appointment") + " #" + appointment.getId() + " - " + appointment.getType(), "");
                 getAppointments();
             } else {
-                throwAlert("Something went wrong", "Something went wrong");
+                throwAlert(text.getString("generic_error"), text.getString("generic_error"), "");
+
             }
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -271,8 +256,10 @@ public class AppointmentController {
     /**
      * @param time a time that should be within business hours in EST
      */
-    private void withinBusinessHours(LocalDateTime time) {
-        System.out.println("time" + time);
+    private boolean outsideBusinessHours(LocalDateTime time) {
+        LocalTime estTime = Appointment.toUTC(time).withZoneSameInstant(Helper.estTime).toLocalTime();
+        System.out.println("estTime " + estTime + " eightAm " + eightAm + " tenPm " + tenPm);
+        return estTime.isBefore(eightAm) || estTime.isAfter(tenPm);
     }
 
     /**
@@ -331,7 +318,7 @@ public class AppointmentController {
     public void modifyAppointment() throws IOException {
         Appointment appointment = appointment_table.getSelectionModel().getSelectedItem();
         setSelectedAppointment(appointment);
-        if (customer == null) { throwAlert("Error: No selected appointment", "Must select appointment to modify"); return; }
+        if (appointment == null) { throwAlert("Error: No selected appointment", "Must select appointment to modify", ""); return; }
         Parent addAppointmentPage = FXMLLoader.load(getClass().getResource("../Views/appointment_form.fxml"));
         Stage stage = new Stage();
         stage.setScene(new Scene(addAppointmentPage));

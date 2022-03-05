@@ -1,5 +1,13 @@
 package Models;
 
+import Controllers.Helper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -15,8 +23,7 @@ public class Customer {
     public String updated_by;
     public String phone;
     public String postal_code;
-
-//    public Appointments[] appointments;
+    public ObservableList<Appointment> appointments = FXCollections.observableArrayList();
 
     public Customer(int id, String name, String address, LocalDateTime create_date, String created_by, String division, String country, LocalDateTime update_date, String updated_by, String phone, String postal_code) {
         this.id = id;
@@ -30,10 +37,55 @@ public class Customer {
         this.updated_by = updated_by;
         this.phone = phone;
         this.postal_code = postal_code;
+        this.appointments = FXCollections.observableArrayList();
+        getCustomerAppointments();
     }
 
     public Customer() {
 
+    }
+
+    /**
+     *  queries the DB for all appointments with the customers Customer_ID
+     */
+    public void getCustomerAppointments() {
+        String query = String.format("select * from appointments where Customer_ID = %s", id);
+        try (Statement stmt = Helper.con.createStatement()) {
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                Appointment appointment;
+                appointment = new Appointment(
+                        rs.getInt("Appointment_ID"),
+                        rs.getInt("Contact_ID"),
+                        rs.getTimestamp("Create_Date").toLocalDateTime(),
+                        rs.getString("Created_By"),
+                        rs.getTimestamp("Last_Update").toLocalDateTime(),
+                        rs.getString("Last_Updated_By"),
+                        rs.getInt("Customer_ID"),
+                        rs.getString("Description"),
+                        rs.getTimestamp("End").toLocalDateTime(),
+                        rs.getTimestamp("Start").toLocalDateTime(),
+                        rs.getString("Location"),
+                        rs.getString("Title"),
+                        rs.getString("Type"),
+                        rs.getInt("User_Id")
+                );
+                addAppointment(appointment);
+            }
+        } catch (SQLException | ParseException throwable) {
+            throwable.printStackTrace();
+        }
+    }
+
+    public ObservableList<Appointment> getAppointments() {
+        return this.appointments;
+    }
+
+    /**
+     * @param appointment is an Appointment belonging to a customer
+     */
+    public void addAppointment(Appointment appointment) {
+        this.appointments.add(appointment);
     }
 
     /**
@@ -175,7 +227,6 @@ public class Customer {
     public void setUpdateDate(LocalDateTime update_date) {
         this.update_date = update_date;
     }
-
 
     /**
      * @return Created By
