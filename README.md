@@ -40,7 +40,9 @@ This application's primary purpose is to manage Customers and Appointments.
 
 ## How To Run
 
-
-
+1. `git clone` or download the code from this repo
+2. [Download Java](https://openjfx.io/openjfx-docs/)
+3. [Download JavaFX 11.0.2](https://openjfx.io/openjfx-docs/#install-javafx)
+4. 
 
 ###### Author: Spencer Romberg | sromber@wgu.edu | spencerromberg.com
