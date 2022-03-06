@@ -13,6 +13,9 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
+/**
+ * Controls and populates the schedules view which displays appointments for each Contact chosen through a dropdown
+ */
 public class SchedulesController {
     @FXML private TableColumn<Appointment, Integer>  id;
     @FXML private TableColumn<Appointment, String> updated_by;
@@ -50,6 +53,9 @@ public class SchedulesController {
         });
     }
 
+    /**
+     * Sets all text in view to users local default language
+     */
     private void setLocalDefault() {
         id.setText(text.getString("id"));
         create_date.setText(text.getString("create_date"));

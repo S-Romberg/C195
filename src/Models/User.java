@@ -24,21 +24,22 @@ public class User {
     }
 
     /**
-     * @return the id
+     * @return users id
      */
     public int getId() {
         return id;
     }
 
     /**
-     * @return the name
+     * @return users name
      */
     public String getUserName() {
         return user_name;
     }
 
     /**
-     * @param name the name to set
+     * Sets user_name to new value
+     * @param name the new name for user
      */
     public void setUserName(String name) {
         this.user_name = name;

@@ -25,6 +25,10 @@ import java.util.ResourceBundle;
 
 import static Controllers.Helper.throwAlert;
 
+
+/**
+ * Controls and populates the customers view, the edit customers view, and the add customers view
+ */
 public class CustomerController {
     private static ResultSet rs;
     @FXML private TableView<Customer> customer_table;
@@ -91,6 +95,9 @@ public class CustomerController {
         }
     }
 
+    /**
+     * Sets all text in view to users local default language
+     */
     private void setLocalDefault() {
         Locale currentLocale = Locale.getDefault();
         text = ResourceBundle.getBundle("TextBundle", currentLocale);

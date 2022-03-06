@@ -18,6 +18,9 @@ import java.text.ParseException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+/**
+ * Controls the reports view by generating and populating all data within
+ */
 public class ReportsController {
 
     @FXML private Label type_report;
@@ -42,6 +45,9 @@ public class ReportsController {
     String userQuery = "select count(User_ID) as count, User_ID from appointments group by User_ID;";
     static ResourceBundle text;
 
+    /**
+     * Connects to database, sets currentLocale and populates view with the correct locale data
+     */
     public void initialize() {
         Helper.connectToAndQueryDatabase();
         Locale currentLocale = Locale.getDefault();
@@ -60,6 +66,10 @@ public class ReportsController {
         populateUserTable();
     }
 
+    /**
+     * Queries the database to grab report data using the monthQuery
+     * Populates month report table that breaks down number of appointment per month
+     */
     public void populateMonthTable() {
         allMonthReports.clear();
         try (Statement stmt = Helper.con.createStatement()) {
@@ -76,6 +86,11 @@ public class ReportsController {
             throwable.printStackTrace();
         }
     }
+
+    /**
+     * Queries the database to grab report data using the typeQuery
+     * Populates type report table that breaks down number of appointment per type
+     */
     public void populateTypeTable() {
         allTypeReports.clear();
         try (Statement stmt = Helper.con.createStatement()) {
@@ -92,6 +107,11 @@ public class ReportsController {
             throwable.printStackTrace();
         }
     }
+
+    /**
+     * Queries the database to grab report data using the userQuery
+     * Populates user report table that breaks down number of appointment per user
+     */
     public void populateUserTable() {
         allUserReports.clear();
         try (Statement stmt = Helper.con.createStatement()) {

@@ -9,7 +9,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -17,7 +16,6 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
@@ -26,10 +24,10 @@ import java.util.function.Predicate;
 
 import static Controllers.Helper.throwAlert;
 
+/**
+ * Controls and populates the appointments view, the edit appointments view, and the add appointments view
+ */
 public class AppointmentController {
-    @FXML private RadioButton all;
-    @FXML private RadioButton monthly;
-    @FXML private RadioButton weekly;
     @FXML private TextField edit_location;
     @FXML private ChoiceBox<Contact> edit_contact;
     @FXML private ChoiceBox<Customer> edit_customer;
@@ -94,6 +92,10 @@ public class AppointmentController {
         }
     }
 
+    /**
+     * Sets initial form values when editing an appointment
+     * Sets choicebox items for customers, contacts, and users
+     */
     private void setFormValues() {
         UserController.getAllUsers();
         CustomerController.getCustomers();
@@ -116,6 +118,9 @@ public class AppointmentController {
         }
     }
 
+    /**
+     * Sets all text in view to users local default language
+     */
     private void setLocalDefault() {
         if(appointment_table != null) {
             id.setText(text.getString("id"));
@@ -151,6 +156,10 @@ public class AppointmentController {
         }
     }
 
+    /**
+     * Iterates through customers to grab all Appointment instances
+     * Stores Appointment instances in allAppointments observable array
+     */
     static void getAppointments() {
         allAppointments.clear();
         for(Customer customer : CustomerController.allCustomers) {
@@ -158,12 +167,23 @@ public class AppointmentController {
         }
     }
 
+    /**
+     * Iterates through customers, calls getCustomerAppointments on each customer
+     * This refreshes all customer data by re-querying the database
+     */
     static void refreshAppointmentData() {
         for(Customer customer : CustomerController.allCustomers) {
             customer.getCustomerAppointments();
         }
     }
 
+    /**
+     * Grabs all values form the appointment form
+     * if values are valid, creates a new Appointment record in the database
+     * then refreshes appointment data and refreshes allAppointments array
+     *
+     * Throws alert if something goes wrong, or if the record is invalid
+     */
     public void createAppointment() {
         try {
             LocalDateTime end = Helper.localTimeToUtc(LocalDateTime.parse(edit_end.getText(), Helper.formatter));
@@ -202,7 +222,13 @@ public class AppointmentController {
         }
     }
 
-
+    /**
+     * Grabs all values form the appointment form
+     * if values are valid, updates the Appointment record in the database
+     * with matching ID from form. Then refreshes appointment data and refreshes allAppointments array
+     *
+     * Throws alert if something goes wrong, or if the record is invalid
+     */
     public void updateAppointment() {
         try {
             int id = Integer.parseInt(edit_id.getText());
@@ -240,7 +266,14 @@ public class AppointmentController {
         }
     }
 
-    public void deleteAppointment(MouseEvent mouseEvent) {
+    /**
+     * Grabs selected appointment from appointment_table, queries the database to delete
+     * the record.
+     *
+     * Throws alert if something goes wrong
+     * Throws alert when record is deleted, informing the user that the appointment has been deleted
+     */
+    public void deleteAppointment() {
         Appointment appointment = appointment_table.getSelectionModel().getSelectedItem();
         setSelectedAppointment(appointment);
         if (customer == null) { throwAlert("Error: No selected appointment", "Must select appointment to delete", ""); return; }
@@ -260,12 +293,19 @@ public class AppointmentController {
         }
     }
 
+    /**
+     * @return boolean true if the times are invalid, false if the times are valid
+     * @param start a LocalDateTime that the user entered as a start time for appointment
+     * @param end a LocalDateTime that the user entered as an end time for appointment
+     * @param customer the customer associated with the appointment that the user is trying to edit or create
+     */
     private boolean invalidTime(LocalDateTime start, LocalDateTime end, Customer customer) {
         System.out.println("Invalid Time");
         return outsideBusinessHours(end) || outsideBusinessHours(start) || overlappingWithOtherAppointments(end, start, customer);
     }
 
     /**
+     * @return boolean true if the time entered is outside business hours in EST, false if time entered is inside business hours in EST
      * @param time a time that should be within business hours in EST
      */
     private boolean outsideBusinessHours(LocalDateTime time) {
@@ -274,8 +314,12 @@ public class AppointmentController {
     }
 
     /**
-     *  @param start new appointment start time, end new appointment end time, customer is customer that is associated with the appointment
-     *  appointment overlaps if the end time or start time falls inside of a previously existing appointment
+     * Appointment overlaps if the end time or start time falls inside of a previously existing appointment
+     *
+     * @return boolean true if appointment times overlap with any other appointments that the customer has, false if the appointment does not overlap with other appointments on the customers calendar
+     *  @param start new appointment start time
+     *  @param end new appointment end time
+     *  @param customer is customer that is associated with the appointment
      */
     private boolean overlappingWithOtherAppointments(LocalDateTime start, LocalDateTime end, Customer customer) {
         boolean overlapping = false;
@@ -310,7 +354,6 @@ public class AppointmentController {
      *  set filter on appointments table to monthly appointments
      */
     public void monthlyAppointments(){
-        System.out.println("CURRENT: " + currentDate);
         Predicate<Appointment> filterAppointments = e -> e.getStartTime().isAfter(currentDate) && e.getStartTime().isBefore(currentDate.plus(1, ChronoUnit.MONTHS));
         filteredAppointments.setPredicate(filterAppointments);
     }
@@ -336,7 +379,9 @@ public class AppointmentController {
         stage.close();
     }
 
-
+    /**
+     * opens add appointment form scene
+     */
     public void addAppointment() throws IOException {
         selectedAppointment = null;
         Parent addAppointmentPage = FXMLLoader.load(getClass().getResource("../Views/appointment_form.fxml"));
@@ -344,7 +389,9 @@ public class AppointmentController {
         stage.setScene(new Scene(addAppointmentPage));
         stage.show();
     }
-
+    /**
+     * opens edit appointment form scene
+     */
     public void modifyAppointment() throws IOException {
         Appointment appointment = appointment_table.getSelectionModel().getSelectedItem();
         setSelectedAppointment(appointment);
@@ -354,7 +401,6 @@ public class AppointmentController {
         stage.setScene(new Scene(addAppointmentPage));
         stage.show();
     }
-
 }
 
 
