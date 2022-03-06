@@ -3,6 +3,8 @@
 
 ## Functionality
 This application's primary purpose is to manage Customers and Appointments. 
+This is a global use application. It can run in any timezone, and will present all text in either French or English depending on local zone.
+All times and dates are displayed in local user time, and stored in UTC. 
 
 > **Customers Tab**
 > 
