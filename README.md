@@ -43,6 +43,6 @@ This application's primary purpose is to manage Customers and Appointments.
 1. `git clone` or download the code from this repo
 2. [Download Java](https://openjfx.io/openjfx-docs/)
 3. [Download JavaFX 11.0.2](https://openjfx.io/openjfx-docs/#install-javafx)
-4. 
+4. [Download MySQL Connector](https://dev.mysql.com/downloads/connector/j/)
 
 ###### Author: Spencer Romberg | sromber@wgu.edu | spencerromberg.com
