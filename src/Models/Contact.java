@@ -1,5 +1,8 @@
 package Models;
 
+/**
+ * Represents a contact with an id, name, and email
+ */
 public class Contact {
     public int id;
     public String name;

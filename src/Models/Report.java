@@ -1,5 +1,8 @@
 package Models;
 
+/**
+ * Represents report data, has count and detail strings
+ */
 public class Report {
     public String count;
     public String detail;

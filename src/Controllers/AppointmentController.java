@@ -294,6 +294,7 @@ public class AppointmentController {
     }
 
     /**
+     * Checks if times for an appointment are invalid or valid
      * @return boolean true if the times are invalid, false if the times are valid
      * @param start a LocalDateTime that the user entered as a start time for appointment
      * @param end a LocalDateTime that the user entered as an end time for appointment
@@ -345,6 +346,8 @@ public class AppointmentController {
 
     /**
      *  set filter on appointments table to all appointments
+     *  Includes predicate with lambda to return true for all appointments, so all appointments are shown
+     *  A lambda was used here because Predicates are one of the perfect use cases for lambdas. They take in values and immediately return a value in a simple block of code
      */
     public void allAppointments(){
         filteredAppointments.setPredicate(s -> true);
@@ -352,6 +355,8 @@ public class AppointmentController {
 
     /**
      *  set filter on appointments table to monthly appointments
+     *  Includes predicate with lambda to return true if the start time for an appointment is after the current moment and within one month
+     *  A lambda was used here because Predicates are one of the perfect use cases for lambdas. They take in values and immediately return a value in a simple block of code
      */
     public void monthlyAppointments(){
         Predicate<Appointment> filterAppointments = e -> e.getStartTime().isAfter(currentDate) && e.getStartTime().isBefore(currentDate.plus(1, ChronoUnit.MONTHS));
@@ -360,6 +365,8 @@ public class AppointmentController {
 
     /**
      *  set filter on appointments table to weekly appointments
+     *  Includes predicate with lambda to return true if the start time for an appointment is after the current moment and within one week
+     *  A lambda was used here because Predicates are one of the perfect use cases for lambdas. They take in values and immediately return a value in a simple block of code
      */
     public void weeklyAppointments(){
         Predicate<Appointment> filterAppointments = e -> e.getStartTime().isAfter(currentDate) && e.getStartTime().isBefore(currentDate.plus(1, ChronoUnit.WEEKS));
@@ -381,6 +388,7 @@ public class AppointmentController {
 
     /**
      * opens add appointment form scene
+     * @throws IOException if something goes wrong
      */
     public void addAppointment() throws IOException {
         selectedAppointment = null;
@@ -391,6 +399,7 @@ public class AppointmentController {
     }
     /**
      * opens edit appointment form scene
+     * @throws IOException if something goes wrong
      */
     public void modifyAppointment() throws IOException {
         Appointment appointment = appointment_table.getSelectionModel().getSelectedItem();

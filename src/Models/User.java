@@ -4,6 +4,9 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 
+/**
+ * Represents a user
+ */
 public class User {
     public int id;
     public String user_name;

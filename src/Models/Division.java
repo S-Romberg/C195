@@ -1,5 +1,8 @@
 package Models;
 
+/**
+ * Represents a division, has an id, country, and division (string, not class)
+ */
 public class Division {
     public int id;
     public String country;

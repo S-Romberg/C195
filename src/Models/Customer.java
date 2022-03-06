@@ -8,9 +8,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * Represents a customer, has many appointments
+ */
 public class Customer {
     public int id;
     public String name;

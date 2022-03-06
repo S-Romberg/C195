@@ -16,6 +16,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.TimeZone;
 
+/**
+ * Represents an appointment associated with a user, contact, and customer
+ */
 public class Appointment {
     int id;
     int contact_id;

@@ -25,9 +25,11 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
 import static Controllers.Helper.throwAlert;
 
+/**
+ * Controls and populates the users (login) view, controls allUsers array
+ */
 public class UserController {
     @FXML
     private TextField id_field;

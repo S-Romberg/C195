@@ -8,6 +8,9 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
 
+/**
+ * Connects to and queries database, throws alerts, initializes time zones, converts local time to UTC
+ */
 public class Helper {
     public static Connection con;
     public static ZoneId localTime;

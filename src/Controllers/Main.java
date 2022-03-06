@@ -7,6 +7,9 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 
+/**
+ * Generates and sets initial login scene
+ */
 public class Main extends Application {
 
     @Override

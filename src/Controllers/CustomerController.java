@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -63,6 +64,9 @@ public class CustomerController {
     private static Customer selectedCustomer;
     ResourceBundle text;
 
+    /**
+     * Connects to database, sets items in table for the customers view, sets items in dropdowns for edit and add views
+     */
     public void initialize() {
         Helper.connectToAndQueryDatabase();
         setLocalDefault();
@@ -77,6 +81,9 @@ public class CustomerController {
         }
     }
 
+    /**
+     * Sets initial form values for the edit customer view, sets dropdown values, sets onClick methods for the save button
+     */
     private void setFormValues() {
         edit_country.setItems(allCountries);
         edit_division.setItems(allDivisions);
@@ -119,6 +126,10 @@ public class CustomerController {
         }
     }
 
+    /**
+     * Queries the database to get all Customer records and create Customer instances
+     * Stores all instances in allCustomers observable array
+     */
     public static void getCustomers() {
         allCustomers.clear();
         String query = "select * from customers " +
@@ -147,6 +158,9 @@ public class CustomerController {
         }
     }
 
+    /**
+     * Queries database to get all countries, adds the country string to the allCountries observable array
+     */
     private void getCountries() {
         String query = "select * from countries";
         try (Statement stmt = Helper.con.createStatement()) {
@@ -159,6 +173,12 @@ public class CustomerController {
         }
     }
 
+    /**
+     * Queries database to get all divisions by country, creates a Division instance for each record returned
+     * adds division to allDivisions observable array
+     *
+     * @param country a string of a country name that will match association in database between Divisions and Countries
+     */
     private void getAndSetDivisions(String country) {
         if (divisions.isEmpty()) {
             String query;
@@ -179,6 +199,12 @@ public class CustomerController {
         }
     }
 
+    /**
+     * Iterates through Division instances to find the matching Division to given name
+     *
+     * @return Division the division that matches the given name
+     * @param name a name that should match a Division instance
+     */
     public Division findDivision(String name) {
         Division match = null;
         for (Division d : divisions) {
@@ -189,6 +215,12 @@ public class CustomerController {
         return match;
     }
 
+    /**
+     * Iterates through Customer instances to find the matching Customer to given id
+     *
+     * @return Customer the customer that matches the given id
+     * @param id an id that should match a Customer instance
+     */
     public static Customer findCustomer(int id) {
         Customer match = null;
         for (Customer d : allCustomers) {
@@ -199,14 +231,26 @@ public class CustomerController {
         return match;
     }
 
-
+    /**
+     * Checks Division instance to see if the associated Country matches given country
+     * This updates the Division dropdown according to selected Country
+     *
+     * @param division a Division that will be added to the allDivisions array if the country matches the given country
+     * @param country a String representing the selected Country on the dropdown
+     */
     public void updatedFilteredDivisions(Division division, String country) {
         if(division.getCountry().equals(country)) {
             allDivisions.add(division.getDivision());
         }
     }
 
-
+    /**
+     * Grabs all values form the customer form
+     * if values are valid, creates a new customer record in the database
+     * then refreshes customer data and refreshes allCustomers array
+     *
+     * Throws alert if something goes wrong, or if the record is invalid
+     */
     public void createCustomer() {
         String address = edit_address.getText();
         String name = edit_name.getText();
@@ -230,6 +274,13 @@ public class CustomerController {
         }
     }
 
+    /**
+     * Grabs all values form the customer form
+     * if values are valid, updates the customer record in the database that matches the ID taken from form
+     * then refreshes customer data and refreshes allCustomers array
+     *
+     * Throws alert if something goes wrong, or if the record is invalid
+     */
     public void updateCustomer() {
         int id = Integer.parseInt(edit_id.getText());
         String address = edit_address.getText();
@@ -253,6 +304,11 @@ public class CustomerController {
         }
     }
 
+    /**
+     * Grabs selected customer from the customer table, queries database to delete the customer selected, refreshes customer data
+     *
+     * Throws alert if something goes wrong
+     */
     public void deleteCustomer() {
         Customer customer = customer_table.getSelectionModel().getSelectedItem();
         setSelectedCustomer(customer);
@@ -298,6 +354,7 @@ public class CustomerController {
 
     /**
      * creates add customer scene
+     * @throws Exception if something goes wrong
      */
     public void addCustomer() throws Exception {
         setSelectedCustomer(null);
@@ -309,6 +366,7 @@ public class CustomerController {
 
     /**
      * creates modify customer scene, sets selectedCustomer to customer selected on table
+     * @throws Exception if something goes wrong
      */
     public void modifyCustomer() throws Exception {
         Customer customer = customer_table.getSelectionModel().getSelectedItem();

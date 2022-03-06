@@ -8,6 +8,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+
+/**
+ * Gets contacts from database, stores allContacts observable array
+ */
 public class ContactController {
     public static ObservableList<Contact> allContacts = FXCollections.observableArrayList();
     public static Contact contact;
