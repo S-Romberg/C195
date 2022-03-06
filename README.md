@@ -4,6 +4,10 @@
 ## Functionality
 This application's primary purpose is to manage Customers and Appointments. 
 
+This is a global use application. It can run in any timezone, and will present all text in either French or English depending on local zone.
+
+All times and dates are displayed in local user time, and stored in UTC. 
+
 > **Customers Tab**
 > 
 >  - Customers can be viewed, updated, added, and deleted 
@@ -44,5 +48,7 @@ This application's primary purpose is to manage Customers and Appointments.
 2. [Download Java](https://openjfx.io/openjfx-docs/)
 3. [Download JavaFX 11.0.2](https://openjfx.io/openjfx-docs/#install-javafx)
 4. [Download MySQL Connector](https://dev.mysql.com/downloads/connector/j/)
+5. Update DB credentials in Controllers.Helper
+6. Run Application through IDE
 
-###### Author: Spencer Romberg | sromber@wgu.edu | spencerromberg.com
+###### Author: Spencer Romberg | [spencerromberg.com](spencerromberg.com)
