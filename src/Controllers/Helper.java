@@ -1,39 +1,17 @@
 package Controllers;
 import javafx.scene.control.Alert;
 import java.sql.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.TimeZone;
 
-//• Error for:  scheduling overlapping appointments for customers
-//
-//e.  Write code to provide an alert when there is an appointment within 15 minutes of the user’s log-in. A custom message should be displayed in the user interface and include the appointment ID, date, and time. If the user does not have any appointments within 15 minutes of logging in, display a custom message in the user interface indicating there are no upcoming appointments.
-//Note: Since evaluation may be testing your application outside of business hours, your alerts must be robust enough to trigger an appointment within 15 minutes of the local time set on the user’s computer, which may or may not be EST.
-//
-//f.  Write code that generates accurate information in each of the following reports and will display the reports in the user interface:
-//
-//Note: You do not need to save and print the reports to a file or provide a screenshot.
-//
-//•  the total number of customer appointments by type and month
-//
-//•  a schedule for each contact in your organization that includes appointment ID, title, type and description, start date and time, end date and time, and customer ID
-//
-//•  an additional report of your choice that is different from the two other required reports in this prompt and from the user log-in date and time stamp that will be tracked in part C
-//
-//C.  Write code that provides the ability to track user activity by recording all user log-in attempts, dates, and time stamps and whether each attempt was successful in a file named login_activity.txt. Append each new record to the existing file, and save to the root folder of the application.
-//
-//
+
 //D.  Provide descriptive Javadoc comments for at least 70 percent of the classes and their members throughout the code, and create an index.html file of your comments to include with your submission based on Oracle’s guidelines for the Javadoc tool best practices. Your comments should include a justification for each lambda expression in the method where it is used.
 //
 //Note: The comments on the lambda need to be located in the comments describing the method where it is located for it to export properly.
-//
 //
 //E.  Create a README.txt file that includes the following information:
 //

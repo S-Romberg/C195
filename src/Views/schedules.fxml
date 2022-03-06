@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="575.0" prefWidth="1098.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.SchedulesController">
+
+  <ChoiceBox fx:id="contacts" layoutX="48.0" layoutY="44.0" prefWidth="150.0" />
+  <TableView fx:id="appointments" layoutX="48.0" layoutY="82.0" prefHeight="411.0" prefWidth="1015.0">
+      <columns>
+          <TableColumn fx:id="id" prefWidth="52.0">
+              <cellValueFactory>
+                  <PropertyValueFactory property="id" />
+              </cellValueFactory>
+          </TableColumn>
+          <TableColumn fx:id="customer" prefWidth="84.0">
+              <cellValueFactory>
+                  <PropertyValueFactory property="CustomerName" />
+              </cellValueFactory>
+          </TableColumn>
+          <TableColumn fx:id="description" prefWidth="84.0">
+              <cellValueFactory>
+                  <PropertyValueFactory property="description" />
+              </cellValueFactory>
+          </TableColumn>
+          <TableColumn fx:id="start_time" prefWidth="84.0">
+              <cellValueFactory>
+                  <PropertyValueFactory property="StartTime" />
+              </cellValueFactory>
+          </TableColumn>
+          <TableColumn fx:id="end_time" prefWidth="84.0">
+              <cellValueFactory>
+                  <PropertyValueFactory property="EndTime" />
+              </cellValueFactory>
+          </TableColumn>
+          <TableColumn fx:id="location_string" prefWidth="84.0">
+              <cellValueFactory>
+                  <PropertyValueFactory property="locationString" />
+              </cellValueFactory>
+          </TableColumn>
+          <TableColumn fx:id="title" prefWidth="84.0">
+              <cellValueFactory>
+                  <PropertyValueFactory property="title" />
+              </cellValueFactory>
+          </TableColumn>
+          <TableColumn fx:id="type" prefWidth="84.0">
+              <cellValueFactory>
+                  <PropertyValueFactory property="type" />
+              </cellValueFactory>
+          </TableColumn>
+          <TableColumn fx:id="user_id" prefWidth="84.0">
+              <cellValueFactory>
+                  <PropertyValueFactory property="UserId" />
+              </cellValueFactory>
+          </TableColumn>
+          <TableColumn fx:id="create_date" prefWidth="84.0">
+              <cellValueFactory>
+                  <PropertyValueFactory property="CreateDate" />
+              </cellValueFactory>
+          </TableColumn>
+          <TableColumn fx:id="created_by" prefWidth="84.0">
+              <cellValueFactory>
+                  <PropertyValueFactory property="CreatedBy" />
+              </cellValueFactory>
+          </TableColumn>
+          <TableColumn fx:id="last_update" prefWidth="84.0">
+              <cellValueFactory>
+                  <PropertyValueFactory property="UpdatedDate" />
+              </cellValueFactory>
+          </TableColumn>
+          <TableColumn fx:id="updated_by" prefWidth="84.0">
+              <cellValueFactory>
+                  <PropertyValueFactory property="UpdatedBy" />
+              </cellValueFactory>
+          </TableColumn>
+      </columns>
+  </TableView>
+  <Label layoutX="48.0" layoutY="20.0" text="Contacts" />
+</AnchorPane>

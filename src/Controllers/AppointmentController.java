@@ -168,9 +168,8 @@ public class AppointmentController {
         try {
             LocalDateTime end = Helper.localTimeToUtc(LocalDateTime.parse(edit_end.getText(), Helper.formatter));
             LocalDateTime start = Helper.localTimeToUtc(LocalDateTime.parse(edit_start.getText(), Helper.formatter));
-            if(outsideBusinessHours(end) && outsideBusinessHours(start)) {
-                System.out.print("OUTSIDE BUSINESS HOURS");
-                throwAlert(text.getString("outside_business_hours"), text.getString("outside_business_hours") + " " + eightAm + " - " + tenPm + "EST", "");
+            if(invalidTime(end, start, edit_customer.getValue())) {
+                throwAlert(text.getString("outside_business_hours"), text.getString("outside_business_hours"), "");
                 return;
             }
             String location = edit_location.getText();
@@ -209,9 +208,8 @@ public class AppointmentController {
             int id = Integer.parseInt(edit_id.getText());
             LocalDateTime end = Helper.localTimeToUtc(LocalDateTime.parse(edit_end.getText(), Helper.formatter));
             LocalDateTime start = Helper.localTimeToUtc(LocalDateTime.parse(edit_start.getText(), Helper.formatter));
-            if(outsideBusinessHours(end) && outsideBusinessHours(start)) {
-                System.out.println("OUTSIDE BUSINESS HOURS");
-                throwAlert(text.getString("outside_business_hours"), text.getString("outside_business_hours") + " " + eightAm + " - " + tenPm + "EST", "");
+            if(invalidTime(end, start, edit_customer.getValue())) {
+                throwAlert(text.getString("outside_business_hours"), text.getString("outside_business_hours"), "");
                 return;
             }
             String location = edit_location.getText();
@@ -262,13 +260,36 @@ public class AppointmentController {
         }
     }
 
+    private boolean invalidTime(LocalDateTime start, LocalDateTime end, Customer customer) {
+        System.out.println("Invalid Time");
+        return outsideBusinessHours(end) || outsideBusinessHours(start) || overlappingWithOtherAppointments(end, start, customer);
+    }
+
     /**
      * @param time a time that should be within business hours in EST
      */
     private boolean outsideBusinessHours(LocalDateTime time) {
         LocalTime estTime = Appointment.toUTC(time).withZoneSameInstant(Helper.estTime).toLocalTime();
-        System.out.println("estTime " + estTime + " eightAm " + eightAm + " tenPm " + tenPm);
         return estTime.isBefore(eightAm) || estTime.isAfter(tenPm);
+    }
+
+    /**
+     *  @param start new appointment start time, end new appointment end time, customer is customer that is associated with the appointment
+     *  appointment overlaps if the end time or start time falls inside of a previously existing appointment
+     */
+    private boolean overlappingWithOtherAppointments(LocalDateTime start, LocalDateTime end, Customer customer) {
+        boolean overlapping = false;
+        end = Appointment.toUTC(end).withZoneSameInstant(Helper.localTime).toLocalDateTime();
+        start = Appointment.toUTC(start).withZoneSameInstant(Helper.localTime).toLocalDateTime();
+        for (Appointment appointment : customer.getAppointments()) {
+            if (end.isBefore(appointment.getEndTime()) && end.isAfter(appointment.getStartTime())) {
+                overlapping = true;
+            }
+            if (start.isBefore(appointment.getEndTime()) && start.isAfter(appointment.getStartTime())) {
+                overlapping = true;
+            }
+        }
+        return overlapping;
     }
 
     /**

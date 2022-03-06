@@ -81,7 +81,6 @@
         </columns>
     </TableView>
     <HBox layoutX="47.0" layoutY="38.0" prefHeight="62.0" prefWidth="301.0" spacing="5.0">
-
        <RadioButton fx:id="all" mnemonicParsing="false" selected="true" text="All" onMouseClicked="#allAppointments">
           <toggleGroup>
              <ToggleGroup fx:id="appointment_filter" />

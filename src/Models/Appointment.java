@@ -123,6 +123,13 @@ public class Appointment {
     /**
      * @return the contact
      */
+    public int getContactId() {
+        return contact_id;
+    }
+
+    /**
+     * @return the contact
+     */
     public Contact getContact() {
         return ContactController.findContact(contact_id);
     }

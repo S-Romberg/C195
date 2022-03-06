@@ -1,7 +1,6 @@
 package Controllers;
 
-import Models.Appointment;
-import Models.Division;
+import java.io.File;
 import Models.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,13 +13,21 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import static Controllers.Helper.throwAlert;
 
 public class UserController {
     @FXML
@@ -40,7 +47,7 @@ public class UserController {
     public static User user;
     String user_id;
     String password;
-    ResourceBundle text;
+    static ResourceBundle text;
     ResultSet rs;
 
     public void initialize() {
@@ -56,9 +63,9 @@ public class UserController {
     public void findUser() throws IOException {
         user_id = id_field.getText();
         password = password_field.getText();
-        String query = "SELECT * FROM users WHERE User_id = '" + user_id + "' AND Password = '" + password + "';";
+        String loginQuery = "SELECT * FROM users WHERE User_id = '" + user_id + "' AND Password = '" + password + "';";
         try (Statement stmt = Helper.con.createStatement()) {
-            rs = stmt.executeQuery(query);
+            rs = stmt.executeQuery(loginQuery);
             if (rs.next()) {
                 user = new User(
                         rs.getInt("User_Id"),
@@ -68,25 +75,41 @@ public class UserController {
                         rs.getTimestamp("Last_Update").toLocalDateTime(),
                         rs.getString("Last_Updated_By"),
                         rs.getString("Password"));
+                recordLoginAttempt(true);
+                appointmentAlert(user);
+                Parent dashboard = FXMLLoader.load(getClass().getResource("../Views/dashboard.fxml"));
+                Stage stage = new Stage();
+                stage.setScene(new Scene(dashboard));
+                stage.show();
             } else {
+                recordLoginAttempt(false);
                 Helper.throwAlert(text.getString("login_error_1"), text.getString("login_error_2"), "");
             }
-
         } catch (SQLException | ParseException throwables) {
             throwables.printStackTrace();
-        } finally {
-            try {
-                rs.close();
-            } catch (Exception e) { /* Ignored */ }
-            try {
-                Helper.con.close();
-            } catch (Exception e) { /* Ignored */ }
-            Parent dashboard = FXMLLoader.load(getClass().getResource("../Views/dashboard.fxml"));
-            Stage stage = new Stage();
-            stage.setScene(new Scene(dashboard));
-            stage.show();
+        }
+    }
+
+    public static void appointmentAlert(User user) {
+        int ID = 0;
+        LocalDateTime start = null;
+        String appointmentQuery = "SELECT * from appointments a where a.User_ID = '" + user.getId() + "' and start > now() and start < now() + INTERVAL 15 MINUTE;";
+        try (Statement stmt = Helper.con.createStatement()) {
+            ResultSet rs = stmt.executeQuery(appointmentQuery);
+            if (rs.next()) {
+                ID = rs.getInt("Appointment_ID");
+                start = rs.getTimestamp("Start").toLocalDateTime();
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
 
+        if(ID != 0 && start != null) {
+            throwAlert(text.getString("upcoming_appointment"), text.getString("upcoming_appointment") + ": " + ID + " " + start
+                    , "");
+        } else {
+            throwAlert(text.getString("no_appointments"), text.getString("no_appointments"), "");
+        }
     }
 
     public static void getAllUsers() {
@@ -120,6 +143,19 @@ public class UserController {
         return match;
     }
 
+    public static void recordLoginAttempt(boolean successful) {
+        try {
+            String str = "\n Login attempt at: " + ZonedDateTime.now() + " Result: " + successful;
+            // will create file if it doesn't exist
+            File myObj = new File("login_activity.txt");
+            myObj.createNewFile();
+
+            Files.write(Paths.get("login_activity.txt"), str.getBytes(), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
 
     public static ObservableList<String> getAllUserNames() {
         ObservableList<String> allUserNames = FXCollections.observableArrayList();
