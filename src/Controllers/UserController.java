@@ -138,7 +138,7 @@ public class UserController {
             if (d.getId() == (id)) {
                 match = d;
             }
-        };
+        }
         return match;
     }
 

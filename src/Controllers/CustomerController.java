@@ -185,7 +185,7 @@ public class CustomerController {
             if (d.getDivision().equals(name)) {
                 match = d;
             }
-        };
+        }
         return match;
     }
 
@@ -195,7 +195,7 @@ public class CustomerController {
             if (d.getId() == id) {
                 match = d;
             }
-        };
+        }
         return match;
     }
 

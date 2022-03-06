@@ -45,7 +45,7 @@ public class ContactController {
             if (c.getId() == id) {
                 match = c;
             }
-        };
+        }
         return match;
     }
 

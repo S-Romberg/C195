@@ -106,8 +106,8 @@ public class AppointmentController {
         if (selectedAppointment != null) {
             edit_id.setText(String.valueOf(selectedAppointment.getId()));
             edit_location.setText(selectedAppointment.getLocationString());
-            edit_start.setText(String.valueOf(selectedAppointment.getStartTime().format(Helper.formatter)));
-            edit_end.setText(String.valueOf(selectedAppointment.getEndTime().format(Helper.formatter)));
+            edit_start.setText(selectedAppointment.getStartTime().format(Helper.formatter));
+            edit_end.setText(selectedAppointment.getEndTime().format(Helper.formatter));
             edit_title.setText(selectedAppointment.getTitle());
             edit_type.setText(selectedAppointment.getType());
             edit_description.setText(selectedAppointment.getDescription());
