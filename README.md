@@ -47,4 +47,4 @@ This application's primary purpose is to manage Customers and Appointments.
 5. Update DB credentials in Controllers.Helper
 6. Run Application through IDE
 
-###### Author: Spencer Romberg | sromber@wgu.edu | spencerromberg.com
+###### Author: Spencer Romberg | [spencerromberg.com](spencerromberg.com)
