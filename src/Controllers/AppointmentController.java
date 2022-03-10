@@ -333,6 +333,9 @@ public class AppointmentController {
             if (start.isBefore(appointment.getEndTime()) && start.isAfter(appointment.getStartTime())) {
                 overlapping = true;
             }
+            if (end.isEqual(appointment.getEndTime()) || end.isEqual(appointment.getStartTime()) || start.isEqual(appointment.getStartTime()) || start.isEqual(appointment.getEndTime())) {
+                overlapping = true;
+            }
         }
         return overlapping;
     }

@@ -43,6 +43,9 @@ public class UserController {
     private Button submit_button;
     @FXML
     private Label location_label;
+    @FXML
+    private Label time_label;
+
 
     public static ObservableList<User> allUsers = FXCollections.observableArrayList();
     public static User user;
@@ -56,6 +59,7 @@ public class UserController {
         Locale currentLocale = Locale.getDefault();
         text = ResourceBundle.getBundle("TextBundle", currentLocale);
         location_label.setText(currentLocale.getDisplayLanguage() + ", " + currentLocale.getDisplayCountry());
+        time_label.setText(Helper.localTime.toString());
         user_label.setText(text.getString("user_id"));
         password_label.setText(text.getString("password"));
         submit_button.setText(text.getString("submit"));
@@ -76,14 +80,14 @@ public class UserController {
                         rs.getTimestamp("Last_Update").toLocalDateTime(),
                         rs.getString("Last_Updated_By"),
                         rs.getString("Password"));
-                recordLoginAttempt(true);
+                recordLoginAttempt(true, user.getUserName());
                 appointmentAlert(user);
                 Parent dashboard = FXMLLoader.load(getClass().getResource("../Views/dashboard.fxml"));
                 Stage stage = new Stage();
                 stage.setScene(new Scene(dashboard));
                 stage.show();
             } else {
-                recordLoginAttempt(false);
+                recordLoginAttempt(false, "");
                 Helper.throwAlert(text.getString("login_error_1"), text.getString("login_error_2"), "");
             }
         } catch (SQLException | ParseException throwables) {
@@ -106,7 +110,9 @@ public class UserController {
         }
 
         if(ID != 0 && start != null) {
-            throwAlert(text.getString("upcoming_appointment"), text.getString("upcoming_appointment") + ": " + ID + " " + start
+            System.out.println(Helper.utcToLocalTime(start));
+            System.out.println(start);
+            throwAlert(text.getString("upcoming_appointment"), text.getString("upcoming_appointment") + "  #" + ID + " - " + Helper.utcToLocalTime(start)
                     , "");
         } else {
             throwAlert(text.getString("no_appointments"), text.getString("no_appointments"), "");
@@ -144,9 +150,15 @@ public class UserController {
         return match;
     }
 
-    public static void recordLoginAttempt(boolean successful) {
+    public static void recordLoginAttempt(boolean successful, String username) {
         try {
-            String str = "\n Login attempt at: " + ZonedDateTime.now() + " Result: " + successful;
+            String str;
+            if(successful) {
+                str = "\n Successful login attempt at: " + ZonedDateTime.now() + " Username: " + username ;
+            } else {
+                str = "\n Unsuccessful login attempt at: " + ZonedDateTime.now();
+            }
+
             // will create file if it doesn't exist
             File myObj = new File("login_activity.txt");
             myObj.createNewFile();

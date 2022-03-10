@@ -54,4 +54,8 @@ public class Helper {
         return ZonedDateTime.of(time, localTime).withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
     }
 
+    public static LocalDateTime utcToLocalTime(LocalDateTime time) {
+        return ZonedDateTime.of(time, ZoneOffset.UTC).withZoneSameInstant(localTime).toLocalDateTime();
+    }
+
 }
